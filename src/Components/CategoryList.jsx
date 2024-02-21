@@ -6,10 +6,10 @@ export default function CategoryList({ data }) {
   function handlePress(data) {
     console.log("Title: ", data.title);
   }
-  return data.map((d) => (
+  return data.map((d, index) => (
     <TouchableOpacity
       className="mx-1"
-      key={data.title}
+      key={index}
       onPress={() => handlePress(d)}
     >
       <LinearGradient

@@ -1,17 +1,27 @@
 import { View, Text, Image, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, {
+  withTiming,
+  useSharedValue,
+  Easing,
+} from "react-native-reanimated";
+
+// Custom components
 import CategoryList from "../Components/CategoryList";
 import DoctorCard from "../Components/DoctorCard";
 import Header from "../Components/Header";
 import FooterMenu from "../Components/FooterMenu";
 
 export default function HomeScreen() {
+  const ImageWidth = useSharedValue(0);
+  const CategoryX = useSharedValue(360);
+
   const dummy_data = [
-    { title: "Category 01" },
-    { title: "Category 11" },
-    { title: "Category 21" },
+    { id: 1, title: "Category 01" },
+    { id: 2, title: "Category 11" },
+    { id: 3, title: "Category 21" },
   ];
   const dummy_doc = [
     { id: 1, name: "Doctor 1", specialization: "Skin", available: true },
@@ -19,6 +29,15 @@ export default function HomeScreen() {
     { id: 3, name: "Doctor 3", specialization: "Bones", available: true },
   ];
 
+  useEffect(() => {
+    CategoryX.value = 360;
+    setTimeout(() => {
+      CategoryX.value = withTiming(0, {
+        duration: 1000,
+        easing: Easing.ease,
+      });
+    });
+  }, []);
   return (
     <>
       <StatusBar style="dark" />
@@ -38,9 +57,9 @@ export default function HomeScreen() {
             {/* Category */}
             <View>
               <Text className="font-bold text-xl py-3">Select Category</Text>
-              <ScrollView horizontal>
+              <Animated.ScrollView horizontal style={{ left: CategoryX }}>
                 <CategoryList data={dummy_data} />
-              </ScrollView>
+              </Animated.ScrollView>
             </View>
 
             {/* Top Rated Doctors */}

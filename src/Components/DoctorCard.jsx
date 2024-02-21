@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function DoctorCard({ docList }) {
   function handleAppointDoc(doc) {
@@ -17,8 +18,12 @@ export default function DoctorCard({ docList }) {
     }, [])
     .map((row, rowIndex) => (
       <View key={rowIndex + row} className="flex flex-row justify-between">
-        {row.map((doc, index) => (
-          <View
+        {row.map((doc) => (
+          <Animated.View
+            entering={FadeInDown.springify()
+              .duration(1000)
+              .delay(100)
+              .damping(12)}
             key={doc.id}
             className="w-[45%] m-2 p-2 flex justify-center items-center border border-gray-600 rounded-2xl"
           >
@@ -76,7 +81,7 @@ export default function DoctorCard({ docList }) {
                 </Text>
               </LinearGradient>
             )}
-          </View>
+          </Animated.View>
         ))}
       </View>
     ));
