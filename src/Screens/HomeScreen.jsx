@@ -19,9 +19,9 @@ export default function HomeScreen() {
   const CategoryX = useSharedValue(360);
 
   const dummy_data = [
-    { id: 1, title: "Category 01" },
-    { id: 2, title: "Category 11" },
-    { id: 3, title: "Category 21" },
+    { id: 1, title: "Bones Spcecialist" },
+    { id: 2, title: "Skin Spcecialist" },
+    { id: 3, title: "Heart Spcecialist" },
   ];
   const dummy_doc = [
     { id: 1, name: "Doctor 1", specialization: "Skin", available: true },
