@@ -33,15 +33,15 @@ export default function FormScreen({ route }) {
 
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView className="flex-1 px-1">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={require("../../assets/Icon/Back.jpeg")}
-            className="absolute top-10 h-5 w-[10%]"
+            className="absolute top-5 h-5 w-[10%]"
           />
         </TouchableOpacity>
-        <View>
+        <View className="pt-1 flex-1">
           {/* Doctor Details */}
           <View className="flex justify-center items-center">
             <Image
@@ -59,7 +59,7 @@ export default function FormScreen({ route }) {
           {/* Slot Details */}
           <View className="">
             {/* Date Select */}
-            <Text className="my-2 text-xl font-bold">Select Date</Text>
+            <Text className="my-1 text-lg font-bold">Select Date</Text>
 
             {!dateModal && (
               <TouchableOpacity
@@ -76,7 +76,7 @@ export default function FormScreen({ route }) {
               <View className="mt-20 flex-1 justify-center items-center">
                 <View className="py-6 px-12 w-[90%] m-20 bg-white rounded-2xl align-center">
                   <DatePicker
-                    mode="calender"
+                    mode="calendar"
                     selected={date}
                     minimumDate={startDate}
                     onDateChange={handleDateChange}
@@ -93,7 +93,7 @@ export default function FormScreen({ route }) {
               </View>
             </Modal>
             {/* Available Slots */}
-            <Text className="my-2 text-xl font-bold">Available Slots</Text>
+            <Text className="my-1 text-lg font-bold">Available Slots</Text>
 
             <View className="flex flex-row flex-wrap justify-around">
               <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
@@ -126,7 +126,7 @@ export default function FormScreen({ route }) {
           {/* Patient Details */}
           <View className="">
             {/* Patient Name */}
-            <Text className="my-2 text-xl font-bold">Patient Name</Text>
+            <Text className="my-1 text-lg font-bold">Patient Name</Text>
 
             <View className="mx-5 my-1 px-2 py-2 border border-black/50 rounded-xl">
               <TextInput
@@ -138,7 +138,7 @@ export default function FormScreen({ route }) {
             </View>
 
             {/* Patient Gender */}
-            <Text className="my-2 text-xl font-bold">Patient Gender</Text>
+            <Text className="my-1 text-lg font-bold">Patient Gender</Text>
             <View className="flex flex-row justify-around">
               {/* male */}
               <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
@@ -158,12 +158,12 @@ export default function FormScreen({ route }) {
             </View>
           </View>
 
-          <TouchableOpacity className="mt-2">
+          <TouchableOpacity className="mt-5">
             <LinearGradient
               colors={["#46b3ff", "#0067af", "#35005b"]}
               className="p-2 align-center rounded-xl"
             >
-              <Text className="py-1 px-2 text-sm self-center text-white">
+              <Text className="py-1 px-2 text-lg self-center text-white">
                 Book Now
               </Text>
             </LinearGradient>

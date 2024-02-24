@@ -15,7 +15,6 @@ import Header from "../Components/Header";
 import FooterMenu from "../Components/FooterMenu";
 
 export default function HomeScreen() {
-  const ImageWidth = useSharedValue(0);
   const CategoryX = useSharedValue(360);
 
   const dummy_data = [

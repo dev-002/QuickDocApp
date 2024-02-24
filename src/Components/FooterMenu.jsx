@@ -10,7 +10,9 @@ export default function FooterMenu() {
       <View className="flex flex-row justify-around items-center">
         <TouchableOpacity
           className="h-[40] w-[15%]"
-          onPress={() => console.log("CheckUp")}
+          onPress={() =>
+            navigation.navigate("AppointmentList", { completedStatus: true })
+          }
         >
           <Animated.Image
             entering={FadeIn.springify().duration(1000).delay(100).damping(12)}
@@ -20,7 +22,9 @@ export default function FooterMenu() {
         </TouchableOpacity>
         <TouchableOpacity
           className="h-[40] w-[15%]"
-          onPress={() => navigation.navigate("Appointments")}
+          onPress={() =>
+            navigation.navigate("AppointmentList", { completedStatus: false })
+          }
         >
           <Animated.Image
             entering={FadeIn.springify().duration(1000).delay(100).damping(12)}
@@ -30,7 +34,7 @@ export default function FooterMenu() {
         </TouchableOpacity>
         <TouchableOpacity
           className="h-[40] w-[15%]"
-          onPress={() => console.log("Ambulance")}
+          onPress={() => navigation.navigate("AmbulanceEmergency")}
         >
           <Animated.Image
             entering={FadeIn.springify().duration(1000).delay(100).damping(12)}
