@@ -2,6 +2,7 @@ import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import SelectDropDown from "react-native-select-dropdown";
 // Icon
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
@@ -10,6 +11,8 @@ export default function SignupScreen(props) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState(2);
+  // 0- admin 1- doctor 2- patient
   const [hide, setHide] = useState(false);
   const [error, setError] = useState({});
 
@@ -89,6 +92,38 @@ export default function SignupScreen(props) {
             </TouchableOpacity>
 
             {error && error?.from === "password" && (
+              <Text className="text-xm text-red-600">{error?.msg}</Text>
+            )}
+          </View>
+
+          <View className="mx-auto my-2 w-2/3">
+            <SelectDropDown
+              data={["Doctor", "Patient"]}
+              onSelect={(selectedItem, index) => {
+                setRole(index);
+              }}
+              buttonTextAfterSelection={(selectedItem) => selectedItem}
+              rowTextForSelection={(item) => item}
+              defaultButtonText={role == 1 ? "Doctor" : "Patient"}
+              buttonTextStyle={{ color: "black", fontWeight: 400 }}
+              buttonStyle={{
+                width: "100%",
+                backgroundColor: "#f3fbfe",
+                padding: 2,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "black",
+                borderRadius: 100,
+              }}
+              dropdownStyle={{ borderRadius: 10 }}
+              selectedRowStyle={{
+                backgroundColor: "blue",
+                borderRadius: 10,
+              }}
+              selectedRowTextStyle={{ color: "white" }}
+            />
+
+            {error && error?.from === "name" && (
               <Text className="text-xm text-red-600">{error?.msg}</Text>
             )}
           </View>

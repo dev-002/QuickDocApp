@@ -9,6 +9,7 @@ import LoginScreen from "./src/Screens/LoginScreen";
 import SignupScreen from "./src/Screens/SignupScreen";
 import AppointmentListScreen from "./src/Screens/AppointmentListScreen";
 import AmbulanceEmergencyScreen from "./src/Screens/AmbulanceEmergencyScreen";
+import ProfileScreen from "./src/Screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ export default function App() {
           name="AmbulanceEmergency"
           component={AmbulanceEmergencyScreen}
         />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
