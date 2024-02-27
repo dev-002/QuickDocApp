@@ -6,6 +6,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(require("./routes/route"));
+app.use("/api/v1", require("./routes/route"));
 
 module.exports = app;

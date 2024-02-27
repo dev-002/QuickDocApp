@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
@@ -59,6 +60,23 @@ const userSchema = new Schema({
     medications: [{ type: String }],
   },
   emergencyContacts: [{ type: contactSchema }],
+});
+
+userSchema.pre("save", () => {
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      console.log("Error Generating salt", err);
+      return;
+    }
+    bcrypt.hash(this.password, salt, async (err, hash) => {
+      if (err) {
+        console.log("Error Creating hashed pass", err);
+        return;
+      }
+      this.password = hash;
+      this.save();
+    });
+  });
 });
 
 module.exports = mongoose.model("user", userSchema);
