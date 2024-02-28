@@ -10,7 +10,10 @@ const contactSchema = {
 };
 
 const userSchema = new Schema({
-  _id: crypto.randomUUID(),
+  _id: {
+    type: String,
+    default: crypto.randomUUID(),
+  },
   role: {
     type: Number,
     default: 2,
@@ -20,11 +23,11 @@ const userSchema = new Schema({
   avatar: {
     type: String,
   },
-  firstName: {
+  fullName: {
     type: String,
     required: true,
   },
-  lastName: {
+  password: {
     type: String,
     required: true,
   },
@@ -48,35 +51,45 @@ const userSchema = new Schema({
   },
   gender: {
     type: Number,
-    // 0-male 1-female
+    enum: [1, 2],
+    // 1-male 2-female
     required: true,
   },
   address: {
     type: String,
   },
   medicalHistory: {
-    existing: [{ type: String }],
-    allergies: [{ type: String }],
-    medications: [{ type: String }],
+    existing: { type: [String], default: null },
+    allergies: { type: [String], default: null },
+    medications: { type: [String], default: null },
   },
-  emergencyContacts: [{ type: contactSchema }],
+  emergencyContacts: { type: [contactSchema], default: null },
 });
 
-userSchema.pre("save", () => {
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      console.log("Error Generating salt", err);
-      return;
-    }
-    bcrypt.hash(this.password, salt, async (err, hash) => {
+userSchema.pre("save", function (next) {
+  if (this.isNew) {
+    bcrypt.genSalt(10, (err, salt) => {
       if (err) {
-        console.log("Error Creating hashed pass", err);
-        return;
+        console.log("Error Generating salt", err);
+        return next(err);
       }
-      this.password = hash;
-      this.save();
+
+      bcrypt.hash(this.password, salt, async (err, hash) => {
+        if (err) {
+          console.log("Error Creating hashed pass", err);
+          return next(err);
+        }
+        this.password = hash;
+        next();
+      });
     });
-  });
+  } else {
+    next();
+  }
 });
+
+// userSchema.post("save", function (next) {
+//   console.log("Document Inserted: ", this);
+// });
 
 module.exports = mongoose.model("user", userSchema);

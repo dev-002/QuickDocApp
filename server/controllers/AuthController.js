@@ -1,35 +1,51 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
+const { genToken } = require("../utilities/AuthToken");
+const user = require("../models/user");
+
+const RegisterController = async (req, res, next) => {
+  const { fullName, mobile, password, gender, role } = req.body;
+
+  try {
+    if (Boolean(role && gender && fullName && mobile && password)) {
+      let user = await User.create({
+        fullName,
+        mobile,
+        password,
+        role,
+        gender,
+      });
+      if (user) {
+        const token = genToken(user._id, user.role, user.fullName);
+        if (token) {
+          user = { ...user._doc, password: null };
+          return res.status(201).json({ user, token });
+        } else return res.status(500).json({ err: "Error Generating Token" });
+      } else return res.status(404).json({ err: "Data not sent" });
+    } else return res.status(500).json({ err: "Values not provided" });
+  } catch (err) {
+    return res.status(400).json(err);
+  }
+};
 
 const LoginController = async (req, res, next) => {
   const { mobile, password } = req.body;
 
   try {
     if (mobile && password) {
-      const user = await User.findOne({ mobile });
+      let user = await User.findOne({ mobile });
       if (user) {
         if (bcrypt.compare(password, user.password)) {
-          return res.status(200).json(user);
-        } else return res.status(401).json("Wrong Credentials");
-      } else return res.status(404).json("No user found");
+          const token = genToken(user._id, user.role, user.fullName);
+          if (token) {
+            user = { ...user._doc, password: null };
+            return res.status(200).json({ user, token });
+          } else return res.status(500).json({ err: "Error Generating Token" });
+        } else return res.status(401).json({ err: "Wrong Credentials" });
+      } else return res.status(404).json({ err: "No user found" });
     }
-  } catch (error) {
-    return res.status(400).json(error);
-  }
-};
-
-const RegisterController = async (req, res, next) => {
-  const { fullName, mobile, password, role } = req.body;
-
-  try {
-    if (fullName && mobile && password && role) {
-      const user = await User.create({ fullName, mobile, password, role });
-      if (user) {
-        return res.status(201).json(user);
-      } else return res.status(404).json("Data not sent");
-    }
-  } catch (error) {
-    return res.status(400).json(error);
+  } catch (err) {
+    return res.status(400).json(err);
   }
 };
 
