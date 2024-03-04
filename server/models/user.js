@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
@@ -10,14 +9,11 @@ const contactSchema = {
 };
 
 const userSchema = new Schema({
-  _id: {
-    type: String,
-    default: crypto.randomUUID(),
-  },
   role: {
     type: Number,
     default: 2,
-    // 0-admin 1-doctor 2-patient
+    enum: [1, 2, 3],
+    // 1-doctor 2-patient 3-admin
     required: true,
   },
   avatar: {
