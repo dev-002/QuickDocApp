@@ -1,20 +1,20 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { genToken } = require("../utilities/AuthToken");
-const user = require("../models/user");
 
 const RegisterController = async (req, res, next) => {
-  const { fullName, mobile, password, gender, role } = req.body;
+  const { name, mobile, password, role } = req.body;
 
   try {
-    if (Boolean(role && gender && fullName && mobile && password)) {
+    if (Boolean(role && name && mobile && password)) {
       let user = await User.create({
-        fullName,
+        fullName: name,
         mobile,
         password,
+        gender: 1,
         role,
-        gender,
       });
+      console.log(user);
       if (user) {
         const token = genToken(user._id, user.role, user.fullName);
         if (token) {
@@ -35,9 +35,10 @@ const LoginController = async (req, res, next) => {
     if (mobile && password) {
       let user = await User.findOne({ mobile });
       if (user) {
-        if (bcrypt.compare(password, user.password)) {
+        if (await bcrypt.compare(password, user.password)) {
           const token = genToken(user._id, user.role, user.fullName);
           if (token) {
+            console.log(user);
             user = { ...user._doc, password: null };
             return res.status(200).json({ user, token });
           } else return res.status(500).json({ err: "Error Generating Token" });

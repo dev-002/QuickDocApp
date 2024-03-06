@@ -5,6 +5,9 @@ const routes = {
     register: baseUrl + "/auth/register",
     login: baseUrl + "/auth/login",
   },
+  Profile: {
+    getProfile: baseUrl + "/profile",
+  },
 };
 
 export default routes;

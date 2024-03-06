@@ -31,8 +31,12 @@ export default function LoginScreen({ navigation }) {
     try {
       const response = await axios.post(Auth.Auth.login, { mobile, password });
       if (response.status == 200) {
-        await AsyncStorage.setItem("token", response.data?.token);
-        await AsyncStorage.setItem("loggedUser", response.data?.user);
+        let token = response.data.token;
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem(
+          "loggedUser",
+          JSON.stringify(response.data?.user)
+        );
         await setIsLogged(true);
         navigation.replace("Home");
       }

@@ -39,10 +39,21 @@ export default function SignupScreen(props) {
     }
 
     try {
-      const response = await axios.post(Auth.Auth.login, { mobile, password });
+      const response = await axios.post(Auth.Auth.register, {
+        name,
+        mobile,
+        password,
+        role,
+      });
       if (response.status == 201) {
-        await AsyncStorage.setItem("token", response.data?.token);
-        await AsyncStorage.setItem("loggedUser", response.data?.user);
+        await AsyncStorage.setItem(
+          "token",
+          JSON.stringify(response.data?.token)
+        );
+        await AsyncStorage.setItem(
+          "loggedUser",
+          JSON.stringify(response.data?.user)
+        );
         await setIsLogged(true);
         navigation.replace("Home");
       }
@@ -119,7 +130,7 @@ export default function SignupScreen(props) {
             <SelectDropDown
               data={["Doctor", "Patient"]}
               onSelect={(selectedItem, index) => {
-                setRole(index);
+                setRole(index + 1);
               }}
               buttonTextAfterSelection={(selectedItem) => selectedItem}
               rowTextForSelection={(item) => item}
