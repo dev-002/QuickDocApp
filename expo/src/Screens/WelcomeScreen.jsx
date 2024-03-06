@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
@@ -8,12 +8,13 @@ import Animated, {
   Easing,
   ReduceMotion,
 } from "react-native-reanimated";
+import { useLoggedIn } from "../Context/useLoggedIn";
 
 export default function WelcomeScreen({ navigation }) {
+  const [isLogged] = useContext(useLoggedIn);
+
   const ringValue = useSharedValue(0);
   const translateValue = useSharedValue(250);
-
-  const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
     ringValue.value = 0;

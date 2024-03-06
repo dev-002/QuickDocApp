@@ -1,12 +1,19 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Auth from "../../test.api";
+import { useLoggedIn } from "../Context/useLoggedIn";
+
 // Icon
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
 
-export default function LoginScreen(props) {
+export default function LoginScreen({ navigation }) {
+  const [isLogged, setIsLogged] = useContext(useLoggedIn);
+
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [hide, setHide] = useState(false);
@@ -16,15 +23,25 @@ export default function LoginScreen(props) {
     // Check validation;
     if (mobile.trim() === "") {
       setError({ from: "email", msg: "Email is required!" });
-      return;
     }
     if (password.trim() === "") {
       setError({ from: "password", msg: "Password is required!" });
       return;
     }
-
-    // Process the request
-    console.log(mobile, password);
+    try {
+      const response = await axios.post(Auth.Auth.login, { mobile, password });
+      if (response.status == 200) {
+        await AsyncStorage.setItem("token", response.data?.token);
+        await AsyncStorage.setItem("loggedUser", response.data?.user);
+        await setIsLogged(true);
+        navigation.replace("Home");
+      }
+    } catch (error) {
+      console.log("Error Signing in:", error);
+      await AsyncStorage.setItem("token", null);
+      await AsyncStorage.setItem("loggedUser", null);
+      await setIsLogged(false);
+    }
   }
 
   return (
@@ -90,7 +107,7 @@ export default function LoginScreen(props) {
 
         {/* Registe Route */}
         <View className="my-2 mx-auto">
-          <TouchableOpacity onPress={() => props.navigation.replace("Signup")}>
+          <TouchableOpacity onPress={() => navigation.replace("Signup")}>
             <Text className="text-base">
               Don't have an account?
               <Text className="text-base text-blue-500"> Register</Text>

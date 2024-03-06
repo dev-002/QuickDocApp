@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,11 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import SelectDropdown from "react-native-select-dropdown";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProfileScreen({ navigation }) {
+  let loggedUser;
+
   let tempDate = new Date();
   let date = getFormatedDate(tempDate.setDate(tempDate.getDate()));
 
@@ -40,7 +43,11 @@ export default function ProfileScreen({ navigation }) {
     ],
   });
 
-  return (
+  useEffect(async () => {
+    loggedUser = await AsyncStorage.getItem("loggedUser");
+  }, []);
+
+  return loggedUser ? (
     <>
       <StatusBar style="dark" />
       <SafeAreaView className="flex-1 px-1 bg-background">
@@ -240,5 +247,17 @@ export default function ProfileScreen({ navigation }) {
         </ScrollView>
       </SafeAreaView>
     </>
+  ) : (
+    NotLoggedUserComp
+  );
+}
+
+function NotLoggedUserComp() {
+  return (
+    <SafeAreaView>
+      <View className="my-1 px-1">
+        <Text className="text-lg mx-auto">Error: No user logged found</Text>
+      </View>
+    </SafeAreaView>
   );
 }

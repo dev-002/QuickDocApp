@@ -1,18 +1,25 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import SelectDropDown from "react-native-select-dropdown";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Auth from "../../test.api";
+import { useLoggedIn } from "../Context/useLoggedIn";
+
 // Icon
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
 
 export default function SignupScreen(props) {
+  const [isLogged, setIsLogged] = useContext(useLoggedIn);
+
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(2);
-  // 0- admin 1- doctor 2- patient
+  //1- doctor 2- patient 3- admin
   const [hide, setHide] = useState(false);
   const [error, setError] = useState({});
 
@@ -31,8 +38,20 @@ export default function SignupScreen(props) {
       return;
     }
 
-    // Process the request
-    console.log(mobile, password);
+    try {
+      const response = await axios.post(Auth.Auth.login, { mobile, password });
+      if (response.status == 201) {
+        await AsyncStorage.setItem("token", response.data?.token);
+        await AsyncStorage.setItem("loggedUser", response.data?.user);
+        await setIsLogged(true);
+        navigation.replace("Home");
+      }
+    } catch (error) {
+      console.log("Error Signing in:", error);
+      await AsyncStorage.setItem("token", null);
+      await AsyncStorage.setItem("loggedUser", null);
+      await setIsLogged(false);
+    }
   }
 
   return (
