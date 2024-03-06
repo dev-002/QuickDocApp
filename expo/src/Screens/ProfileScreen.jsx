@@ -45,6 +45,7 @@ export default function ProfileScreen({ navigation }) {
 
   useEffect(async () => {
     loggedUser = await AsyncStorage.getItem("loggedUser");
+    console.log("User LoggedIn", loggedUser);
   }, []);
 
   return loggedUser ? (
