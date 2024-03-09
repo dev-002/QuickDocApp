@@ -37,13 +37,21 @@ export default function LoginScreen({ navigation }) {
           "loggedUser",
           JSON.stringify(response.data?.user)
         );
+        await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
-        navigation.replace("Home");
+        response.data.user.role == 1
+          ? navigation.replace("DoctorHome")
+          : role == 2
+          ? navigation.replace("Home")
+          : navigation.replace("Admin");
       }
     } catch (error) {
       console.log("Error Signing in:", error);
-      await AsyncStorage.setItem("token", null);
-      await AsyncStorage.setItem("loggedUser", null);
+      await AsyncStorage.removeItem("token").catch((err) => console.log(err));
+      await AsyncStorage.removeItem("loggedUser").catch((err) =>
+        console.log(err)
+      );
+      await AsyncStorage.removeItem("role").catch((err) => console.log(err));
       await setIsLogged(false);
     }
   }

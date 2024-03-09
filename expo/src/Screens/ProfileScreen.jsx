@@ -43,7 +43,6 @@ export default function ProfileScreen() {
           },
           emergencyContacts: [
             { name: "papa", contact: 8755742123, relationship: "Father" },
-            { name: "mumma", contact: 8755742112, relationship: "Mother" },
           ],
         });
       });
@@ -51,8 +50,12 @@ export default function ProfileScreen() {
   }, []);
 
   async function handleLogout() {
-    await AsyncStorage.setItem("token", null);
-    await AsyncStorage.setItem("loggedUser", null);
+    await AsyncStorage.removeItem("token").catch((err) => console.log(err));
+    await AsyncStorage.removeItem("loggedUser").catch((err) =>
+      console.log(err)
+    );
+    await AsyncStorage.removeItem("role").catch((err) => console.log(err));
+
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -63,7 +66,7 @@ export default function ProfileScreen() {
 
   async function handleUpdate() {}
 
-  function handleChange(value, field) {
+  function handleChange(value, field, field2) {
     switch (field) {
       case "fullName": {
         setProfile((prevProfile) => ({ ...prevProfile, [field]: value }));
@@ -76,6 +79,22 @@ export default function ProfileScreen() {
         }));
         break;
       }
+      case "address": {
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          [field]: value,
+        }));
+        break;
+      }
+      case "medicalHistory": {
+        console.log(`${field}.${field2}`, field[field2]);
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          [field[field2]]: value,
+        }));
+        break;
+      }
+
       default: {
         console.log("Error");
       }
@@ -118,12 +137,7 @@ export default function ProfileScreen() {
                 value={profile.age?.toString()}
                 inputMode="numeric"
                 placeholder="Enter Age"
-                className={
-                  profile.age
-                    ? ""
-                    : "text-black/40 " +
-                      "my-1 p-1 border border-black/40 rounded-lg"
-                }
+                className={"my-1 p-1 border border-black/40 rounded-lg"}
                 onChangeText={(text) => handleChange(text, "age")}
               />
             </View>
@@ -205,14 +219,10 @@ export default function ProfileScreen() {
               <Text className="my-1 font-bold text-lg">Address:</Text>
               <TextInput
                 multiline={true}
-                value={profile.address ? profile.address : "Enter the address"}
-                placeholder="Address"
-                className={
-                  profile.address
-                    ? ""
-                    : "text-black/40 " +
-                      `p-1 h-10 w-full border border-black/70 rounded-xl`
-                }
+                value={profile.address}
+                placeholder="Enter the address"
+                className={`p-1 h-10 w-full border border-black/70 rounded-xl`}
+                onChangeText={(text) => handleChange(text, "address")}
               />
             </View>
 
@@ -226,26 +236,35 @@ export default function ProfileScreen() {
                   value={profile.medicalHistory?.existing}
                   placeholder="Existing Medical History"
                   className="w-2/3 my-1 p-1 border border-black/40 rounded-lg"
+                  onChangeText={(text) =>
+                    handleChange(text, "medicalHistory", "existing")
+                  }
                 />
               </View>
               <View className="flex flex-row justify-around items-center">
                 <Text className="w-1/3 font-bold text-md">
-                  Existing Medical History
+                  Existing Allergies
                 </Text>
                 <TextInput
                   value={profile.medicalHistory?.allergies}
                   placeholder="Allergies History"
                   className="w-2/3 my-1 p-1 border border-black/40 rounded-lg"
+                  onChangeText={(text) =>
+                    handleChange(text, "medicalHistory", "allergies")
+                  }
                 />
               </View>
               <View className="flex flex-row justify-around items-center">
                 <Text className="w-1/3 font-bold text-md">
-                  Existing Medical History
+                  Existing Medications
                 </Text>
                 <TextInput
                   value={profile.medicalHistory?.medications}
                   placeholder="Medications History"
                   className="w-2/3 my-1 p-1 border border-black/40 rounded-lg"
+                  onChangeText={(text) =>
+                    handleChange(text, "medicalHistory", "medications")
+                  }
                 />
               </View>
             </View>

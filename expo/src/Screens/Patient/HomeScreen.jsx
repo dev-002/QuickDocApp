@@ -9,10 +9,10 @@ import Animated, {
 } from "react-native-reanimated";
 
 // Custom components
-import CategoryList from "../Components/CategoryList";
-import DoctorCard from "../Components/DoctorCard";
-import Header from "../Components/Header";
-import FooterMenu from "../Components/FooterMenu";
+import CategoryList from "../../Components/CategoryList";
+import DoctorCard from "../../Components/DoctorCard";
+import Header from "../../Components/Header";
+import FooterMenu from "../../Components/FooterMenu";
 
 export default function HomeScreen() {
   const CategoryX = useSharedValue(360);
@@ -48,7 +48,7 @@ export default function HomeScreen() {
             {/* Home Icon */}
             <View>
               <Image
-                source={require("../../assets/Icon/Home_Screen.jpeg")}
+                source={require("../../../assets/Icon/Home_Screen.jpeg")}
                 className="h-48 w-full"
               />
             </View>

@@ -12,7 +12,7 @@ import { useLoggedIn } from "../Context/useLoggedIn";
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
 
-export default function SignupScreen(props) {
+export default function SignupScreen({ navigation }) {
   const [isLogged, setIsLogged] = useContext(useLoggedIn);
 
   const [name, setName] = useState("");
@@ -46,21 +46,29 @@ export default function SignupScreen(props) {
         role,
       });
       if (response.status == 201) {
-        await AsyncStorage.setItem(
-          "token",
-          JSON.stringify(response.data?.token)
-        );
+        let token = response.data?.token;
+        await AsyncStorage.setItem("token", token);
         await AsyncStorage.setItem(
           "loggedUser",
           JSON.stringify(response.data?.user)
         );
+        await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
-        navigation.replace("Home");
+        response.data.user.role == 1
+          ? navigation.replace("DoctorHome")
+          : role == 2
+          ? navigation.replace("Home")
+          : navigation.replace("Admin");
       }
     } catch (error) {
-      console.log("Error Signing in:", error);
-      await AsyncStorage.setItem("token", null);
-      await AsyncStorage.setItem("loggedUser", null);
+      console.log("Error Signing in:", error, error?.err);
+      await AsyncStorage.removeItem("token").catch((err) => console.log(err));
+      await AsyncStorage.removeItem("loggedUser").catch((err) =>
+        console.log(err)
+      );
+      await AsyncStorage.removeItem("loggedUser").catch((err) =>
+        console.log(err)
+      );
       await setIsLogged(false);
     }
   }
@@ -173,7 +181,7 @@ export default function SignupScreen(props) {
 
         {/* Registe Route */}
         <View className="my-2 mx-auto">
-          <TouchableOpacity onPress={() => props.navigation.replace("Login")}>
+          <TouchableOpacity onPress={() => navigation.replace("Login")}>
             <Text className="text-base">
               Already have an account?
               <Text className="text-base text-blue-500"> Login</Text>

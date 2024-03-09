@@ -23,7 +23,6 @@ export default function Header() {
   }, []);
 
   async function handleLogout() {
-    console.log("Daba na");
     await AsyncStorage.removeItem("token").catch((err) => console.log(err));
     await AsyncStorage.removeItem("loggedUser").catch((err) =>
       console.log(err)

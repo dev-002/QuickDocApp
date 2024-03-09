@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DoctorAppointmentCard from "../Components/DoctorAppointmentCard";
+import DoctorAppointmentCard from "../../Components/DoctorAppointmentCard";
 
 export default function AppointmentListScreen({ navigation }) {
   const appointment_data = [

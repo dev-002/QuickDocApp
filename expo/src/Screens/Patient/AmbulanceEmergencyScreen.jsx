@@ -35,7 +35,7 @@ export default function AmbulanceEmergencyScreen({ navigation }) {
         {/* Button */}
         <View className="mt-5 flex-1 items-center">
           <Image
-            source={require("../../assets/images/Ambulance_Emergency.png")}
+            source={require("../../../assets/images/Ambulance_Emergency.png")}
             className="h-[40%] w-[80%]"
           />
 

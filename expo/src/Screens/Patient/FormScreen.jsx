@@ -37,7 +37,7 @@ export default function FormScreen({ route }) {
       <SafeAreaView className="flex-1 px-1">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require("../../assets/Icon/Back.jpeg")}
+            source={require("../../../assets/Icon/Back.jpeg")}
             className="absolute top-5 h-5 w-[10%]"
           />
         </TouchableOpacity>
@@ -45,7 +45,7 @@ export default function FormScreen({ route }) {
           {/* Doctor Details */}
           <View className="flex justify-center items-center">
             <Image
-              source={require("../../assets/Icon/Doctor_Avatar.jpeg")}
+              source={require("../../../assets/Icon/Doctor_Avatar.jpeg")}
               className="h-20 w-20 rounded-full"
             />
 
@@ -143,7 +143,7 @@ export default function FormScreen({ route }) {
               {/* male */}
               <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
                 <Image
-                  source={require("../../assets/Icon/Male.jpeg")}
+                  source={require("../../../assets/Icon/Male.jpeg")}
                   className="p-2 h-10 w-10"
                 />
               </TouchableOpacity>
@@ -151,7 +151,7 @@ export default function FormScreen({ route }) {
               {/* female */}
               <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
                 <Image
-                  source={require("../../assets/Icon/Female.jpeg")}
+                  source={require("../../../assets/Icon/Female.jpeg")}
                   className="p-2 h-10 w-10"
                 />
               </TouchableOpacity>
