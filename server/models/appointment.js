@@ -2,30 +2,26 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const appointmentSchema = new Schema({
-  patient: {
-    type: Schema.Types.ObjectId,
-    ref: "users",
-    required: true,
-  },
-  doctor: {
-    type: Schema.Types.ObjectId,
-    ref: "users",
-    required: true,
-  },
   date: {
-    type: String,
+    type: Date,
     required: true,
   },
   timeSlot: {
     type: String,
     required: true,
   },
-  patientGender: {
-    type: Number,
-    enum: [1, 2],
-    // 1-Male 2-Female
+  patientId: {
+    type: Schema.Types.ObjectId,
+    ref: "patient",
     required: true,
   },
+  doctorId: {
+    type: Schema.Types.ObjectId,
+    ref: "doctor",
+    required: true,
+  },
+  reason: { type: String, required: true },
+
   status: {
     type: String,
     default: null,

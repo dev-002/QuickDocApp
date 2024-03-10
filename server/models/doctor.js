@@ -1,38 +1,22 @@
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const contactSchema = {
-  name: String,
-  relationship: String,
-  contact: Number,
-};
-
-const userSchema = new Schema({
+const doctorSchema = new Schema({
   role: {
     type: Number,
-    default: 2,
-    enum: [1, 2, 3],
-    // 1-doctor 2-patient 3-admin
     required: true,
+    default: 2,
   },
   avatar: {
     type: String,
   },
-  fullName: {
+  name: {
     type: String,
     required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  age: {
-    type: Number,
   },
   mobile: {
     type: Number,
-    required: true,
+    unique: true,
     validate: {
       validator: function (v) {
         return v.toString().length >= 10;
@@ -42,27 +26,22 @@ const userSchema = new Schema({
     },
     required: true,
   },
-  dob: {
-    type: Date,
-  },
   gender: {
     type: Number,
     enum: [1, 2],
     // 1-male 2-female
     required: true,
   },
-  address: {
+  experience: {
+    type: Number,
+    required: true,
+  },
+  specialization: {
     type: String,
   },
-  medicalHistory: {
-    existing: { type: [String], default: null },
-    allergies: { type: [String], default: null },
-    medications: { type: [String], default: null },
-  },
-  emergencyContacts: { type: [contactSchema], default: null },
 });
 
-userSchema.pre("save", function (next) {
+doctorSchema.pre("save", function (next) {
   if (this.isNew) {
     bcrypt.genSalt(10, (err, salt) => {
       if (err) {
@@ -84,8 +63,4 @@ userSchema.pre("save", function (next) {
   }
 });
 
-// userSchema.post("save", function (next) {
-//   console.log("Document Inserted: ", this);
-// });
-
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model("doctor", doctorSchema);
