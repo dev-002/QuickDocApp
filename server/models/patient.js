@@ -11,6 +11,7 @@ const contactSchema = {
 const patientSchema = new Schema({
   role: {
     type: Number,
+    enum: [1, 3],
     default: 3,
     required: true,
   },
@@ -79,9 +80,5 @@ patientSchema.pre("save", function (next) {
     next();
   }
 });
-
-// patientSchema.post("save", function (next) {
-//   console.log("Document Inserted: ", this);
-// });
 
 module.exports = mongoose.model("patient", patientSchema);
