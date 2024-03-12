@@ -2,19 +2,19 @@ const Appointment = require("../models/appointment");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
 
-const AppointmentRequestController = async (req, res, next) => {
-  let { patient, doctor, date, timeSlot, patientGender } = req.body;
-  patient = new ObjectId(patient);
-  doctor = new ObjectId(doctor);
+const AppointmentRequest = async (req, res, next) => {
+  let { patientId, doctorId, date, timeSlot, reason } = req.body;
+  patientId = new ObjectId(patientId);
+  doctorId = new ObjectId(doctorId);
 
   try {
-    if (Boolean(patient, doctor, date, timeSlot, patientGender)) {
+    if (Boolean(patientId, doctorId, date, timeSlot, reason)) {
       const appointment = await Appointment.create({
-        patient,
-        doctor,
+        patientId,
+        doctorId,
         date,
         timeSlot,
-        patientGender,
+        reason,
       });
       if (appointment) return res.status(201).json({ appointment, ack: true });
       else
@@ -29,12 +29,11 @@ const AppointmentRequestController = async (req, res, next) => {
   }
 };
 
-const AppointmentResponseController = async (req, res, next) => {
-  const { status } = req.body;
-  const appointment_id = req.params.id;
+const AppointmentResponse = async (req, res, next) => {
+  const { status, appointment_id } = req.body;
 
   try {
-    if (Boolean(appointment_id)) {
+    if (Boolean(appointment_id, status)) {
       const appointment = await Appointment.findByIdAndUpdate(
         appointment_id,
         { $set: { status } },
@@ -54,6 +53,6 @@ const AppointmentResponseController = async (req, res, next) => {
 };
 
 module.exports = {
-  AppointmentRequestController,
-  AppointmentResponseController,
+  AppointmentRequest,
+  AppointmentResponse,
 };
