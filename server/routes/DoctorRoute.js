@@ -4,9 +4,11 @@ const router = express.Router();
 const {
   listDoctor,
   listAppointment,
+  listAllAppointment,
 } = require("../controllers/DoctorConroller");
 
 router.get("/list", listDoctor);
 router.post("/appointment", listAppointment);
+router.post("/appointment/all", listAllAppointment);
 
 module.exports = router;
