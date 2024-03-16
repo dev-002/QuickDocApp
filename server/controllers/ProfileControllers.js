@@ -6,16 +6,18 @@ const getProfile = async (req, res, next) => {
   let { token } = req.body;
 
   try {
-    console.log("Before:", token);
     token = token.split(" ")[1];
-    console.log("After:", token);
     const tokenVerify = jwt.verify(token, process.env.JWT_SECRET);
     if (tokenVerify) {
-      console.log(tokenVerify);
-      return res.status(200).json({ ack: true });
+      if (tokenVerify.role == 2) {
+        const user = await Doctor.findOne({ _id: tokenVerify._id });
+      } else {
+        const user = await Patient.findOne({ _id: tokenVerify._id });
+      }
+      if (user) return res.status(200).json({ ack: true, user });
+      else return res.status(404).json({ ack: false, err: "No user found" });
     } else return res.status(400).json({ ack: false });
   } catch (error) {
-    console.log("Error in Profile Route:", error);
     return res.status(500).json({ ack: false, err: error });
   }
 };
