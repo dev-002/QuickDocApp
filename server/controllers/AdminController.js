@@ -1,5 +1,8 @@
 const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
+const Appointment = require("../models/appointment");
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 
 const fetchListDoctor = async (req, res, next) => {
   const { role } = req.body;
@@ -37,4 +40,23 @@ const fetchListPatient = async (req, res, next) => {
     return res.status(401).json({ ack: false, err: "Unauthorized Access" });
 };
 
-module.exports = { fetchListDoctor, fetchListPatient };
+const fetchAppointments = async (req, res, next) => {
+  let { role, doctorId } = req.body;
+
+  try {
+    if (role == 2) {
+      if (doctorId) {
+        doctorId = ObjectId(doctorId);
+        const appointments = await Appointment.find({ doctorId });
+      } else {
+        const appointments = await Appointment.find();
+      }
+
+      return res.status(200).json({ ack: true, appointments });
+    } else return res.status(401).json({ ack: false, err: "Unauthorized" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
+module.exports = { fetchListDoctor, fetchListPatient, fetchAppointments };
