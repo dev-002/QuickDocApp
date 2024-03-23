@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const appointmentSchema = new Schema({
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   timeSlot: {

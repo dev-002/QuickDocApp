@@ -8,7 +8,6 @@ const {
 } = require("../controllers/DoctorConroller");
 
 router.get("/list", listDoctor);
-router.post("/appointment", listAppointment);
 router.post("/appointment/all", listAllAppointment);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+const appointment = require("../models/appointment");
 const Appointment = require("../models/appointment");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
@@ -52,7 +53,58 @@ const AppointmentResponse = async (req, res, next) => {
   }
 };
 
+const listTodayAppointment = async (req, res, next) => {
+  let { doctorId } = req.body;
+  doctorId = new ObjectId(doctorId);
+
+  const date = new Date();
+  let today = [date.getDate(), date.getMonth(), date.getFullYear()].join("-");
+
+  try {
+    if (Boolean(doctorId)) {
+      const appointmentList = await Appointment.find({
+        $and: [
+          {
+            doctorId,
+            date: today,
+          },
+          {
+            $or: [
+              { status: "pending" },
+              { status: "approved" },
+              { status: "rejected" },
+            ],
+          },
+        ],
+      });
+
+      if (appointmentList) {
+        const appointmentSlot = {
+          slot1: [],
+          slot2: [],
+          slot3: [],
+          slot4: [],
+          slot5: [],
+          slot6: [],
+        };
+        appointmentList.map((appointment) => {
+          appointmentSlot[appointment.timeSlot].push(appointment);
+        });
+        return res.status(200).json({ ack: true, appointmentSlot });
+      } else
+        return res
+          .status(500)
+          .json({ ack: false, err: "Error Fetching Appoinment" });
+    } else
+      return res.status(404).json({ ack: false, err: "No Values Provided" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
 module.exports = {
   AppointmentRequest,
   AppointmentResponse,
+  // doctor
+  listTodayAppointment,
 };
