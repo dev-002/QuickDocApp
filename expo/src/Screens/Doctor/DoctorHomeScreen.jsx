@@ -1,19 +1,67 @@
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  FlatList,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import URL from "../../../test.api";
+import axios from "axios";
 
 // Custom Components
 import Header from "../../Components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-export default function DoctorHomeScreen() {
+export default function DoctorHomeScreen({ navigation }) {
   const [profile, setProfile] = useState({});
   const [date, setDate] = useState([]);
   const [time, setTime] = useState([]);
+  const [appointmentList, setAppointmentList] = useState({});
+
+  async function fetchUser() {
+    try {
+      const response = await axios.post(URL.Appointment.todayAppointment, {
+        doctorId: profile?._id,
+      });
+      if (response.status == 200) {
+        // console.log(response.data);
+        setAppointmentList(response.data?.appointmentList);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function getPatientList() {
+    const timeMap = {
+      slot1: 12,
+      slot2: 14,
+      slot3: 16,
+      slot4: 18,
+      slot5: 20,
+      slot6: 23,
+    };
+    const list = [];
+
+    for (let slot in appointmentList) {
+      if (appointmentList[slot].length > 0) {
+        appointmentList[slot].map((appointment) => {
+          const hour = new Date().getHours();
+          if (hour < timeMap[appointment.timeSlot]) list.push;
+        });
+      }
+    }
+    return list;
+  }
+
   useEffect(() => {
     let dat = new Date();
-    setTime([dat.getHours(), dat.getMinutes()]);
+    setTime([dat.getHours() % 12, dat.getMinutes()]);
     setDate([dat.getDate(), dat.getMonth(), dat.getFullYear()]);
 
     (async function () {
@@ -25,6 +73,8 @@ export default function DoctorHomeScreen() {
         ...user,
       });
     })();
+
+    fetchUser();
   }, []);
 
   return (
@@ -58,7 +108,8 @@ export default function DoctorHomeScreen() {
                   <Text className="text-xl font-bold">Time:</Text>
 
                   <Text className="text-xl">
-                    {time[0] + ": " + time[1]} {time[0] < 12 ? "a.m." : "p.m."}
+                    {time[0] + ": " + time[1]}{" "}
+                    {new Date().getHours() < 12 ? "a.m." : "p.m."}
                   </Text>
                 </View>
               </View>
@@ -73,46 +124,165 @@ export default function DoctorHomeScreen() {
             <Text className="font-bold text-xl">Today's Appointments:</Text>
 
             <View className="flex flex-row flex-wrap justify-around">
-              <View className="w-[45%] my-2 px-2 py-2 bg-green-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">
-                  10:00 AM - 12:00 PM
-                </Text>
+              {appointmentList?.slot1 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot1
+                      ? new Date().getHours() > 12
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 10 && new Date().getHours() < 12
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl `}
+                >
+                  <Text className="text-center text-base">
+                    10:00 AM - 12:00 PM
+                  </Text>
+                </View>
+              )}
+
+              {appointmentList?.slot2 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot2
+                      ? new Date().getHours() > 14
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 12 && new Date().getHours() < 14
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl`}
+                >
+                  <Text className="text-center text-base">
+                    12:00 PM - 2:00 PM
+                  </Text>
+                </View>
+              )}
+
+              {appointmentList?.slot3 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot3
+                      ? new Date().getHours() > 16
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 14 && new Date().getHours() < 16
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl`}
+                >
+                  <Text className="text-center text-base">
+                    2:00 PM - 4:00 PM
+                  </Text>
+                </View>
+              )}
+
+              {appointmentList?.slot4 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot4
+                      ? new Date().getHours() > 18
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 16 && new Date().getHours() < 18
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl`}
+                >
+                  <Text className="text-center text-base">
+                    4:00 PM - 6:00 PM
+                  </Text>
+                </View>
+              )}
+
+              {appointmentList?.slot5 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot5
+                      ? new Date().getHours() > 20
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 18 && new Date().getHours() < 20
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl`}
+                >
+                  <Text className="text-center text-base">
+                    6:00 PM - 8:00 PM
+                  </Text>
+                </View>
+              )}
+
+              {appointmentList?.slot6 || (
+                <View
+                  className={`bg-${
+                    appointmentList?.slot6
+                      ? new Date().getHours() > 23
+                        ? "green"
+                        : "orange"
+                      : "neutral"
+                  }-300 w-[45%] my-2 px-2 py-2 border border-${
+                    new Date().getHours() >= 21 && new Date().getHours() < 23
+                      ? "red-500"
+                      : "black/50"
+                  } rounded-xl`}
+                >
+                  <Text className="text-center text-base">
+                    9:00 PM - 11:00 PM
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Todays Patient List */}
+          <View className="flex-1">
+            <Text className="font-bold text-xl">Patient List:</Text>
+
+            <View className="flex flex-row flex-wrap justify-around">
+              <View className="mt-3">
+                <Text className="text-xl font-light">No Appointment Left</Text>
               </View>
-              <View className="w-[45%] my-2 px-2 py-2 bg-neutral-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">
-                  12:00 PM - 2:00 PM
-                </Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 bg-neutral-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">2:00 PM - 4:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 bg-orange-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">4:00 PM - 6:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 bg-orange-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">6:00 PM - 8:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 bg-orange-300 border border-black/50 rounded-xl">
-                <Text className="text-center text-base">
-                  9:00 PM - 11:00 PM
-                </Text>
-              </View>
+
+              {console.log(getPatientList())}
+              {/* <FlatList
+                data={getPatientList()}
+                renderItem={(patient) => (
+                  <View>
+                    <Text>{patient.name}</Text>
+                  </View>
+                )}
+                keyExtractor={(patient) => patient._id}
+              /> */}
             </View>
           </View>
         </ScrollView>
+
         <DoctorFooterMenu />
       </SafeAreaView>
     </>
   );
 }
 
-function DoctorFooterMenu({ navigation }) {
+function DoctorFooterMenu() {
+  const navigation = useNavigation();
   return (
     <View className="fixed bottom-10 w-[80%] h-auto left-[10%] p-1 bg-background border border-black/50 rounded-full">
       <View className="flex flex-row justify-around items-center">
         <Pressable
           className="h-[40] w-[15%]"
-          onPress={() => navigation.navigate("AppointmentList")}
+          onPress={() => navigation.navigate("DoctorAppointmentList")}
         >
           <Image
             source={require("../../../assets/Icon/CheckUp.jpeg")}
@@ -121,7 +291,7 @@ function DoctorFooterMenu({ navigation }) {
         </Pressable>
         <Pressable
           className="h-[40] w-[15%]"
-          onPress={() => navigation.navigate("Profile")}
+          onPress={() => navigation.navigate("DoctorProfile")}
         >
           <Image
             source={require("../../../assets/Icon/profile.png")}
@@ -130,7 +300,7 @@ function DoctorFooterMenu({ navigation }) {
         </Pressable>
         <Pressable
           className="h-[40] w-[15%]"
-          onPress={() => navigation.navigate("AmbulanceEmergency")}
+          onPress={() => navigation.navigate("DoctorPatientList")}
         >
           <Image
             source={require("../../../assets/Icon/Ambulance.jpeg")}
@@ -141,3 +311,46 @@ function DoctorFooterMenu({ navigation }) {
     </View>
   );
 }
+
+// {/* <ScrollView>
+// {appointment_data &&
+//   appointment_data?.map((appointment) => (
+//     <TouchableOpacity
+//       key={appointment?.id}
+//       className="my-2 py-3 px-2 bg-indigo-100 border border-black/60 rounded-xl"
+//       onPress={() =>
+//         console.log(
+//           `Doctor Appointment: \nid: ${appointment.id} \nname: ${appointment.name}`
+//         )
+//       }
+//     >
+//       <View className="flex flex-row justify-start items-center">
+//         {/* Doctor Details */}
+//         <View className="w-2/3 flex flex-row justify-normal items-center">
+//           {/* Doctor Avatar */}
+//           <View className="w-1/3 p-1 mr-2">
+//             <Image
+//               source={require("../../assets/Icon/Doctor_Avatar.jpeg")}
+//               className="h-14 w-14 rounded-full"
+//             />
+//           </View>
+//           {/* Doctor Detials */}
+//           <View className="w-2/3 py-2">
+//             <Text className="text-lg font-bold">{appointment?.name}</Text>
+//             <Text className="text-base font-medium">
+//               {appointment?.appointmentTime}
+//             </Text>
+//           </View>
+//         </View>
+//         {/* Status*/}
+//         <View className="w-1/3 flex justify-center items-center">
+//           {appointment.status ? (
+//             <Text className="text-lg text-green-500">Completed</Text>
+//           ) : (
+//             <Text className="text-lg text-orange-500">Pending</Text>
+//           )}
+//         </View>
+//       </View>
+//     </TouchableOpacity>
+//   ))}
+// </ScrollView> */}

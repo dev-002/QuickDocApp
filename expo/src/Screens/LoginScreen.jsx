@@ -10,6 +10,7 @@ import { useLoggedIn } from "../Context/useLoggedIn";
 // Icon
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
+import getScreen from "../utility/getScreen";
 
 export default function LoginScreen({ navigation }) {
   const [isLogged, setIsLogged] = useContext(useLoggedIn);
@@ -39,11 +40,12 @@ export default function LoginScreen({ navigation }) {
         );
         await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
-        response.data.user.role == 1
-          ? navigation.replace("DoctorHome")
-          : role == 2
-          ? navigation.replace("Home")
-          : navigation.replace("Admin");
+        await navigation.replace(await getScreen());
+        // response.data.user.role == 1
+        //   ? navigation.replace("DoctorHome")
+        //   : role == 2
+        //   ? navigation.replace("Home")
+        //   : navigation.replace("Admin");
       }
     } catch (error) {
       console.log("Error Signing in:", error);

@@ -16,6 +16,10 @@ import AmbulanceEmergencyScreen from "./src/Screens/Patient/AmbulanceEmergencySc
 import ProfileScreen from "./src/Screens/ProfileScreen";
 // Doctor
 import DoctorHomeScreen from "./src/Screens/Doctor/DoctorHomeScreen";
+import DoctorAppointmentList from "./src/Screens/Doctor/DoctorAppointmentList";
+import DoctorProfile from "./src/Screens/Doctor/DoctorProfile";
+import DoctorPatientList from "./src/Screens/Doctor/DoctorPatientList";
+import PatientRecord from "./src/Screens/Doctor/PatientRecord";
 // Admin
 import AdminScreen from "./src/Screens/Admin/AdminScreen";
 
@@ -26,12 +30,13 @@ export default function App() {
     <UseLoggedInContex>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login"
+          initialRouteName="DoctorHome"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
+
           {/* Patient */}
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Appointments" component={AppointmentScreen} />
@@ -48,6 +53,16 @@ export default function App() {
 
           {/* Doctor */}
           <Stack.Screen name="DoctorHome" component={DoctorHomeScreen} />
+          <Stack.Screen
+            name="DoctorAppointmentList"
+            component={DoctorAppointmentList}
+          />
+          <Stack.Screen name="DoctorProfile" component={DoctorProfile} />
+          <Stack.Screen
+            name="DoctorPatientList"
+            component={DoctorPatientList}
+          />
+          <Stack.Screen name="DoctorPatientRecord" component={PatientRecord} />
 
           {/* Admin */}
           <Stack.Screen name="Admin" component={AdminScreen} />

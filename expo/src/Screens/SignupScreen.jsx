@@ -54,11 +54,12 @@ export default function SignupScreen({ navigation }) {
         );
         await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
-        response.data.user.role == 1
-          ? navigation.replace("DoctorHome")
-          : role == 2
-          ? navigation.replace("Home")
-          : navigation.replace("Admin");
+        await navigation.replace(await getScreen());
+        // response.data.user.role == 1
+        //   ? navigation.replace("DoctorHome")
+        //   : role == 2
+        //   ? navigation.replace("Home")
+        //   : navigation.replace("Admin");
       }
     } catch (error) {
       console.log("Error Signing in:", error, error?.err);
@@ -66,9 +67,7 @@ export default function SignupScreen({ navigation }) {
       await AsyncStorage.removeItem("loggedUser").catch((err) =>
         console.log(err)
       );
-      await AsyncStorage.removeItem("loggedUser").catch((err) =>
-        console.log(err)
-      );
+      await AsyncStorage.removeItem("role");
       await setIsLogged(false);
     }
   }

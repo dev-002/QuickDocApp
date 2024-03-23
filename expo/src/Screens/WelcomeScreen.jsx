@@ -9,9 +9,11 @@ import Animated, {
   ReduceMotion,
 } from "react-native-reanimated";
 import { useLoggedIn } from "../Context/useLoggedIn";
+import getScreen from "../utility/getScreen";
 
 export default function WelcomeScreen({ navigation }) {
-  const [isLogged] = useContext(useLoggedIn);
+  // const [isLogged] = useContext(useLoggedIn);
+  const isLogged = true;
 
   const ringValue = useSharedValue(0);
   const translateValue = useSharedValue(250);
@@ -32,7 +34,10 @@ export default function WelcomeScreen({ navigation }) {
         reduceMotion: ReduceMotion.System,
       });
     }, 500);
-    setTimeout(() => navigation.replace(isLogged ? "Home" : "Login"), 5000);
+    setTimeout(
+      async () => navigation.replace(isLogged ? await getScreen() : "Login"),
+      5000
+    );
   }, []);
 
   return (
