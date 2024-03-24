@@ -4,11 +4,20 @@ This project is a Quickdoc App built using React Native and Expo. Quickdoc is an
 
 ## Technologies Used
 
+### Expo:
+
 1. React Native with Expo
 2. [React Navigation](https://reactnavigation.org/)
 3. [React-native-reanimated](https://docs.swmansion.com/react-native-reanimated/)
 4. [Native Wind](https://www.nativewind.dev/)
 5. [React Native Heroicons] (https://heroicons.com/)
+
+### Server:
+
+1. Node
+2. Express Js
+3. Bcrypt
+4. MongoDB
 
 ---
 
