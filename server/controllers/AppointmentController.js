@@ -32,7 +32,6 @@ const AppointmentRequest = async (req, res, next) => {
 
 const AppointmentResponse = async (req, res, next) => {
   const { status, appointment_id } = req.body;
-
   try {
     if (Boolean(appointment_id, status)) {
       const appointment = await Appointment.findByIdAndUpdate(
@@ -54,30 +53,38 @@ const AppointmentResponse = async (req, res, next) => {
 };
 
 const listTodayAppointment = async (req, res, next) => {
-  let { doctorId } = req.body;
+  let { doctorId, today, approved } = req.body;
   doctorId = new ObjectId(doctorId);
-
-  const date = new Date();
-  let today = [date.getDate(), date.getMonth(), date.getFullYear()].join("-");
+  console.log(doctorId, typeof today, approved);
 
   try {
     if (Boolean(doctorId)) {
-      const appointmentList = await Appointment.find({
-        $and: [
-          {
-            doctorId,
-            date: today,
-          },
-          {
-            $or: [
-              { status: "pending" },
-              { status: "approved" },
-              { status: "rejected" },
-            ],
-          },
-        ],
-      });
-
+      let appointmentList;
+      if (approved) {
+        appointmentList = await Appointment.find({
+          doctorId,
+          date: "11-4-2024",
+          // date: today,
+          status: "approved",
+        }).populate("patientId");
+      } else {
+        appointmentList = await Appointment.find({
+          // $and: [
+          // {
+          doctorId,
+          date: today,
+          //   },
+          //   {
+          //     $or: [
+          //       { status: "pending" },
+          //       { status: "approved" },
+          //       { status: "rejected" },
+          //     ],
+          //   },
+          // ],
+        }).populate("patientId");
+      }
+      console.log(appointmentList);
       if (appointmentList) {
         const appointmentSlot = {
           slot1: [],
@@ -87,10 +94,14 @@ const listTodayAppointment = async (req, res, next) => {
           slot5: [],
           slot6: [],
         };
+        const PatientList = [];
         appointmentList.map((appointment) => {
-          appointmentSlot[appointment.timeSlot].push(appointment);
+          appointmentSlot["slot" + appointment.timeSlot].push(appointment);
+          PatientList.push(appointment.patientId);
         });
-        return res.status(200).json({ ack: true, appointmentSlot });
+        return res
+          .status(200)
+          .json({ ack: true, appointmentSlot, PatientList });
       } else
         return res
           .status(500)

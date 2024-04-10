@@ -9,5 +9,4 @@ const router = express.Router();
 router.post("/", AppointmentRequest);
 router.post("/today", listTodayAppointment);
 router.post("/statusChange", AppointmentResponse);
-
 module.exports = router;

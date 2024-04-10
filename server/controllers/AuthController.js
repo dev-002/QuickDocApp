@@ -73,13 +73,12 @@ const LoginController = async (req, res, next) => {
     if (Boolean(mobile && password && role)) {
       if (role == 2) {
         let doctor = await Doctor.findOne({ mobile });
-
         if (doctor) {
           if (await bcrypt.compare(password, doctor.password)) {
             const token = genToken(doctor._id, doctor.role, doctor.name);
             if (token) {
               doctor = { ...doctor._doc, password: null };
-              return res.status(200).json({ doctor, token });
+              return res.status(200).json({ user: doctor, token });
             } else
               return res
                 .status(500)
@@ -98,7 +97,7 @@ const LoginController = async (req, res, next) => {
             const token = genToken(patient._id, patient.role, patient.name);
             if (token) {
               patient = { ...patient._doc, password: null };
-              return res.status(200).json({ patient, token });
+              return res.status(200).json({ user: patient, token });
             } else
               return res
                 .status(500)

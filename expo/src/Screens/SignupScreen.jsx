@@ -19,7 +19,7 @@ export default function SignupScreen({ navigation }) {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(2);
-  //1- doctor 2- patient 3- admin
+  //1- admin 2- doctor 3- patient
   const [hide, setHide] = useState(false);
   const [error, setError] = useState({});
 

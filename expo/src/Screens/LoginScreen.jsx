@@ -2,9 +2,10 @@ import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import SelectDropDown from "react-native-select-dropdown";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Auth from "../../test.api";
+import URL from "../../test.api";
 import { useLoggedIn } from "../Context/useLoggedIn";
 
 // Icon
@@ -19,6 +20,8 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [hide, setHide] = useState(false);
   const [error, setError] = useState();
+  const [role, setRole] = useState(3);
+  //1- admin 2- doctor 3- patient
 
   async function handleSubmit() {
     // Check validation;
@@ -30,8 +33,14 @@ export default function LoginScreen({ navigation }) {
       return;
     }
     try {
-      const response = await axios.post(Auth.Auth.login, { mobile, password });
+      const response = await axios.post(URL.Auth.login, {
+        mobile,
+        password,
+        role,
+      });
+      console.log("LoginResponse: ", response.data);
       if (response.status == 200) {
+        console.log(response.data, typeof response.data);
         let token = response.data.token;
         await AsyncStorage.setItem("token", token);
         await AsyncStorage.setItem(
@@ -40,6 +49,7 @@ export default function LoginScreen({ navigation }) {
         );
         await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
+        console.log(await getScreen());
         await navigation.replace(await getScreen());
         // response.data.user.role == 1
         //   ? navigation.replace("DoctorHome")
@@ -104,6 +114,34 @@ export default function LoginScreen({ navigation }) {
             {error && error?.from === "password" && (
               <Text className="text-xm text-red-600">{error?.msg}</Text>
             )}
+          </View>
+
+          <View className="mx-auto my-2 w-2/3">
+            <SelectDropDown
+              data={["Doctor", "Patient"]}
+              onSelect={(selectedItem, index) => {
+                setRole(index + 2);
+              }}
+              buttonTextAfterSelection={(selectedItem) => selectedItem}
+              rowTextForSelection={(item) => item}
+              defaultButtonText={role == 2 ? "Doctor" : "Patient"}
+              buttonTextStyle={{ color: "black", fontWeight: 400 }}
+              buttonStyle={{
+                width: "100%",
+                backgroundColor: "#f3fbfe",
+                padding: 2,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "black",
+                borderRadius: 100,
+              }}
+              dropdownStyle={{ borderRadius: 10 }}
+              selectedRowStyle={{
+                backgroundColor: "blue",
+                borderRadius: 10,
+              }}
+              selectedRowTextStyle={{ color: "white" }}
+            />
           </View>
 
           <TouchableOpacity

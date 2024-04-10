@@ -1,20 +1,20 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   Image,
   ScrollView,
   Pressable,
-  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import URL from "../../../test.api";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Custom Components
 import Header from "../../Components/Header";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
 export default function DoctorHomeScreen({ navigation }) {
@@ -22,15 +22,26 @@ export default function DoctorHomeScreen({ navigation }) {
   const [date, setDate] = useState([]);
   const [time, setTime] = useState([]);
   const [appointmentList, setAppointmentList] = useState({});
+  const [patientList, setPatientList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  async function fetchUser() {
+  async function fetchAppointments() {
+    const date = new Date();
+    let today = [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(
+      "-"
+    );
     try {
       const response = await axios.post(URL.Appointment.todayAppointment, {
         doctorId: profile?._id,
+        today,
+        approved: true,
       });
+      console.log(response?.data);
       if (response.status == 200) {
         // console.log(response.data);
         setAppointmentList(response.data?.appointmentList);
+        setPatientList(response.data?.PatientList);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -47,12 +58,14 @@ export default function DoctorHomeScreen({ navigation }) {
       slot6: 23,
     };
     const list = [];
+    console.log("list: ", appointmentList);
 
     for (let slot in appointmentList) {
+      console.log(slot);
       if (appointmentList[slot].length > 0) {
         appointmentList[slot].map((appointment) => {
           const hour = new Date().getHours();
-          if (hour < timeMap[appointment.timeSlot]) list.push;
+          if (hour < timeMap["slot" + appointment.timeSlot]) list.push;
         });
       }
     }
@@ -74,7 +87,7 @@ export default function DoctorHomeScreen({ navigation }) {
       });
     })();
 
-    fetchUser();
+    fetchAppointments();
   }, []);
 
   return (
@@ -82,192 +95,196 @@ export default function DoctorHomeScreen({ navigation }) {
       <StatusBar style="dark" />
       <SafeAreaView className="flex-1 bg-background">
         <Header />
-        <ScrollView showsVerticalScrollIndicator={false} className="px-2">
-          {/* Doctor Home Page */}
-          <View className="my-3 flex flex-row">
-            {/* Doctor Avatar */}
-            <View className="w-1/3 mx-auto">
-              <Image
-                source={require("../../../assets/Icon/Doctor_Avatar.jpeg")}
-                className="h-20 w-20"
-              />
-            </View>
-
-            {/* Todays Info */}
-            <View className="w-2/3 mx-auto">
-              <View className="mb-1 flex flex-row">
-                <View>
-                  <Text className="text-xl font-bold">Today:</Text>
-
-                  <Text className="text-xl">
-                    {date[0] + " /" + date[1] + " /" + date[2]}
-                  </Text>
-                </View>
-
-                <View className="ml-5">
-                  <Text className="text-xl font-bold">Time:</Text>
-
-                  <Text className="text-xl">
-                    {time[0] + ": " + time[1]}{" "}
-                    {new Date().getHours() < 12 ? "a.m." : "p.m."}
-                  </Text>
-                </View>
-              </View>
-              <Text className="text-xl">
-                Welcome Dr. {profile && profile?.fullName?.split(" ")[0]}
-              </Text>
-            </View>
-          </View>
-
-          {/* Today's Appointment */}
-          <View className="my-1">
-            <Text className="font-bold text-xl">Today's Appointments:</Text>
-
-            <View className="flex flex-row flex-wrap justify-around">
-              {appointmentList?.slot1 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot1
-                      ? new Date().getHours() > 12
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 10 && new Date().getHours() < 12
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl `}
-                >
-                  <Text className="text-center text-base">
-                    10:00 AM - 12:00 PM
-                  </Text>
-                </View>
-              )}
-
-              {appointmentList?.slot2 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot2
-                      ? new Date().getHours() > 14
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 12 && new Date().getHours() < 14
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl`}
-                >
-                  <Text className="text-center text-base">
-                    12:00 PM - 2:00 PM
-                  </Text>
-                </View>
-              )}
-
-              {appointmentList?.slot3 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot3
-                      ? new Date().getHours() > 16
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 14 && new Date().getHours() < 16
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl`}
-                >
-                  <Text className="text-center text-base">
-                    2:00 PM - 4:00 PM
-                  </Text>
-                </View>
-              )}
-
-              {appointmentList?.slot4 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot4
-                      ? new Date().getHours() > 18
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 16 && new Date().getHours() < 18
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl`}
-                >
-                  <Text className="text-center text-base">
-                    4:00 PM - 6:00 PM
-                  </Text>
-                </View>
-              )}
-
-              {appointmentList?.slot5 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot5
-                      ? new Date().getHours() > 20
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 18 && new Date().getHours() < 20
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl`}
-                >
-                  <Text className="text-center text-base">
-                    6:00 PM - 8:00 PM
-                  </Text>
-                </View>
-              )}
-
-              {appointmentList?.slot6 || (
-                <View
-                  className={`bg-${
-                    appointmentList?.slot6
-                      ? new Date().getHours() > 23
-                        ? "green"
-                        : "orange"
-                      : "neutral"
-                  }-300 w-[45%] my-2 px-2 py-2 border border-${
-                    new Date().getHours() >= 21 && new Date().getHours() < 23
-                      ? "red-500"
-                      : "black/50"
-                  } rounded-xl`}
-                >
-                  <Text className="text-center text-base">
-                    9:00 PM - 11:00 PM
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-
-          {/* Todays Patient List */}
-          <View className="flex-1">
-            <Text className="font-bold text-xl">Patient List:</Text>
-
-            <View className="flex flex-row flex-wrap justify-around">
-              <View className="mt-3">
-                <Text className="text-xl font-light">No Appointment Left</Text>
+        {loading ? (
+          <ActivityIndicator size="large" animating={loading} />
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false} className="px-2">
+            {/* Doctor Home Page */}
+            <View className="my-3 flex flex-row">
+              {/* Doctor Avatar */}
+              <View className="w-1/3 mx-auto">
+                <Image
+                  source={require("../../../assets/Icon/Doctor_Avatar.jpeg")}
+                  className="h-20 w-20"
+                />
               </View>
 
-              {console.log(getPatientList())}
-              {/* <FlatList
-                data={getPatientList()}
-                renderItem={(patient) => (
+              {/* Todays Info */}
+              <View className="w-2/3 mx-auto">
+                <View className="mb-1 flex flex-row">
                   <View>
-                    <Text>{patient.name}</Text>
+                    <Text className="text-xl font-bold">Today:</Text>
+
+                    <Text className="text-xl">
+                      {date[0] + " /" + date[1] + " /" + date[2]}
+                    </Text>
+                  </View>
+
+                  <View className="ml-5">
+                    <Text className="text-xl font-bold">Time:</Text>
+
+                    <Text className="text-xl">
+                      {time[0] + ": " + time[1]}{" "}
+                      {new Date().getHours() < 12 ? "a.m." : "p.m."}
+                    </Text>
+                  </View>
+                </View>
+                <Text className="text-xl">
+                  Welcome Dr. {profile && profile?.name?.split(" ")[0]}
+                </Text>
+              </View>
+            </View>
+
+            {/* Today's Appointment */}
+            <View className="my-1">
+              <Text className="font-bold text-xl">Today's Appointments:</Text>
+
+              <View className="flex flex-row flex-wrap justify-around">
+                {appointmentList?.slot1 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot1
+                        ? new Date().getHours() > 12
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 10 && new Date().getHours() < 12
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl `}
+                  >
+                    <Text className="text-center text-base">
+                      10:00 AM - 12:00 PM
+                    </Text>
                   </View>
                 )}
-                keyExtractor={(patient) => patient._id}
-              /> */}
+
+                {appointmentList?.slot2 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot2
+                        ? new Date().getHours() > 14
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 12 && new Date().getHours() < 14
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl`}
+                  >
+                    <Text className="text-center text-base">
+                      12:00 PM - 2:00 PM
+                    </Text>
+                  </View>
+                )}
+
+                {appointmentList?.slot3 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot3
+                        ? new Date().getHours() > 16
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 14 && new Date().getHours() < 16
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl`}
+                  >
+                    <Text className="text-center text-base">
+                      2:00 PM - 4:00 PM
+                    </Text>
+                  </View>
+                )}
+
+                {appointmentList?.slot4 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot4
+                        ? new Date().getHours() > 18
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 16 && new Date().getHours() < 18
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl`}
+                  >
+                    <Text className="text-center text-base">
+                      4:00 PM - 6:00 PM
+                    </Text>
+                  </View>
+                )}
+
+                {appointmentList?.slot5 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot5
+                        ? new Date().getHours() > 20
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 18 && new Date().getHours() < 20
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl`}
+                  >
+                    <Text className="text-center text-base">
+                      6:00 PM - 8:00 PM
+                    </Text>
+                  </View>
+                )}
+                {console.log("Slot 6:", appointmentList)}
+                {appointmentList?.slot6 || (
+                  <View
+                    className={`bg-${
+                      appointmentList?.slot6
+                        ? new Date().getHours() > 23
+                          ? "green"
+                          : "orange"
+                        : "neutral"
+                    }-300 w-[45%] my-2 px-2 py-2 border border-${
+                      new Date().getHours() >= 21 && new Date().getHours() < 23
+                        ? "red-500"
+                        : "black/50"
+                    } rounded-xl`}
+                  >
+                    <Text className="text-center text-base">
+                      9:00 PM - 11:00 PM
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-        </ScrollView>
+
+            {/* Todays Patient List */}
+            <View className="flex-1">
+              <Text className="font-bold text-xl">Patient List:</Text>
+
+              <View className="flex flex-wrap justify-around">
+                <View className="mt-3">
+                  {patientList &&
+                    patientList.map((patient) => (
+                      <View className="p-1 m-1 rounded-lg border border-black/40">
+                        <Text>Name: {patient.name}</Text>
+                        <Text>
+                          Gender: {patient.gender == 1 ? "Male" : "Female"}
+                        </Text>
+                        <Text>Mobile: {patient.mobile}</Text>
+                      </View>
+                    ))}
+                </View>
+
+                {appointmentList && console.log(getPatientList())}
+              </View>
+            </View>
+          </ScrollView>
+        )}
 
         <DoctorFooterMenu />
       </SafeAreaView>
