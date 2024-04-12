@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation }) {
 
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [hide, setHide] = useState(false);
+  const [hide, setHide] = useState(true);
   const [error, setError] = useState();
   const [role, setRole] = useState(3);
   //1- admin 2- doctor 3- patient

@@ -22,7 +22,7 @@ const RegisterController = async (req, res, next) => {
           const token = genToken(doctor._id, doctor.role, doctor.name);
           if (token) {
             doctor = { ...doctor._doc, password: null };
-            return res.status(201).json({ ack: true, doctor, token });
+            return res.status(201).json({ ack: true, user: doctor, token });
           } else
             return res
               .status(500)
@@ -37,6 +37,7 @@ const RegisterController = async (req, res, next) => {
     // patient or admin
     else {
       const { name, password, mobile, gender } = req.body;
+      
       if (Boolean(name && password && mobile && gender)) {
         let patient = await Patient.create({
           role,
@@ -49,7 +50,7 @@ const RegisterController = async (req, res, next) => {
           const token = genToken(patient._id, patient.role, patient.name);
           if (token) {
             patient = { ...patient._doc, password: null };
-            return res.status(201).json({ ack: true, patient, token });
+            return res.status(201).json({ ack: true, user: patient, token });
           } else
             return res
               .status(500)

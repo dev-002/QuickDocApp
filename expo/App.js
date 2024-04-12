@@ -30,7 +30,7 @@ export default function App() {
     <UseLoggedInContex>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="DoctorHome"
+          initialRouteName="Welcome"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />

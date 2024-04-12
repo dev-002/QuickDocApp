@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
-const leaveDaySchema = {
-  date: Date,
-  day: Boolean,
-  hour: String,
-};
-
 const doctorSchema = new Schema({
   role: {
     type: Number,
@@ -50,7 +44,7 @@ const doctorSchema = new Schema({
     type: String,
   },
   leaveDays: {
-    type: [leaveDaySchema],
+    type: [String],
     default: [],
   },
 });

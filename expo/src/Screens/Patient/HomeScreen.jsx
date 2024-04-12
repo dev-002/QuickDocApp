@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
@@ -7,7 +7,8 @@ import Animated, {
   useSharedValue,
   Easing,
 } from "react-native-reanimated";
-
+import URL from "../../../test.api";
+import axios from "axios";
 // Custom components
 import CategoryList from "../../Components/CategoryList";
 import DoctorCard from "../../Components/DoctorCard";
@@ -15,18 +16,38 @@ import Header from "../../Components/Header";
 import FooterMenu from "../../Components/FooterMenu";
 
 export default function HomeScreen() {
-  const CategoryX = useSharedValue(360);
+  const [docList, setDoctList] = useState([]);
+  const [specialization, setSpecialization] = useState([]);
 
-  const dummy_data = [
-    { id: 1, title: "Bones Spcecialist" },
-    { id: 2, title: "Skin Spcecialist" },
-    { id: 3, title: "Heart Spcecialist" },
-  ];
-  const dummy_doc = [
-    { id: 1, name: "Doctor 1", specialization: "Skin", available: true },
-    { id: 2, name: "Doctor 2", specialization: "Heart", available: false },
-    { id: 3, name: "Doctor 3", specialization: "Bones", available: true },
-  ];
+  useEffect(() => {
+    async function fetchSpecialization() {
+      try {
+        const response = await axios.get(URL.Doctor.getSpecialization);
+        // console.log("specialization", response.data);
+        if (response.status == 200) {
+          setSpecialization(response.data?.category);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function fetchDoctorList() {
+      try {
+        const response = await axios.get(URL.Doctor.getDoctors);
+        // console.log(response?.data);
+        if (response.status == 200) {
+          setDoctList(response.data.doctorList);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchDoctorList();
+    fetchSpecialization();
+  }, []);
+  const CategoryX = useSharedValue(360);
 
   useEffect(() => {
     CategoryX.value = 360;
@@ -54,18 +75,20 @@ export default function HomeScreen() {
             </View>
 
             {/* Category */}
-            <View>
-              <Text className="font-bold text-xl py-3">Select Category</Text>
-              <Animated.ScrollView horizontal style={{ left: CategoryX }}>
-                <CategoryList data={dummy_data} />
-              </Animated.ScrollView>
-            </View>
+            {specialization && (
+              <View>
+                <Text className="font-bold text-xl py-3">Select Category</Text>
+                <Animated.ScrollView horizontal style={{ left: CategoryX }}>
+                  <CategoryList data={specialization} />
+                </Animated.ScrollView>
+              </View>
+            )}
 
             {/* Top Rated Doctors */}
             <View>
               <Text className="font-bold text-xl py-3">Top Rated Doctors</Text>
               <ScrollView>
-                <DoctorCard docList={dummy_doc} />
+                {docList && <DoctorCard docList={docList} />}
               </ScrollView>
             </View>
           </View>

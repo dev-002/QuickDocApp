@@ -4,8 +4,9 @@ const { ObjectId } = require("mongoose").Types;
 
 const listDoctor = async (req, res, next) => {
   try {
-    const doctorList = await Doctor.find();
+    let doctorList = await Doctor.find();
     if (doctorList) {
+      doctorList = doctorList.map((doc) => ({ ...doc._doc, password: null }));
       return res.status(200).json({ ack: true, doctorList });
     } else
       return res
@@ -39,4 +40,27 @@ const listAllAppointment = async (req, res, next) => {
   }
 };
 
-module.exports = { listDoctor, listAllAppointment };
+const getAllSpecialization = async (req, res, next) => {
+  try {
+    const doctorList = await Doctor.find({});
+
+    if (doctorList) {
+      const specialization = [];
+      doctorList.map((doc) => {
+        if (
+          !specialization.includes(doc._doc?.specialization) &&
+          doc._doc.specialization != null
+        )
+          specialization.push(doc._doc?.specialization);
+      });
+      return res.status(200).json({ ack: true, category: specialization });
+    } else
+      return res
+        .status(500)
+        .json({ ack: false, err: "Error Fetching Appoinment" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
+module.exports = { listDoctor, listAllAppointment, getAllSpecialization };

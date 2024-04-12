@@ -4,9 +4,9 @@ import React from "react";
 
 export default function CategoryList({ data }) {
   function handlePress(data) {
-    console.log("Title: ", data.title);
+    console.log("Title: ", data);
   }
-  return data.map((d, index) => (
+  return data?.map((d, index) => (
     <TouchableOpacity
       className="mx-1"
       key={index}
@@ -17,7 +17,7 @@ export default function CategoryList({ data }) {
         className="p-5 align-center rounded-xl"
       >
         <Text className="py-1 px-2 font-bold text-sm self-center text-white">
-          {d.title}
+          {d}
         </Text>
       </LinearGradient>
     </TouchableOpacity>

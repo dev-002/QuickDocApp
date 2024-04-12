@@ -7,6 +7,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Auth from "../../test.api";
 import { useLoggedIn } from "../Context/useLoggedIn";
+import getScreen from "../utility/getScreen";
 
 // Icon
 import Hide from "../../assets/Icon/hide.png";
@@ -18,9 +19,10 @@ export default function SignupScreen({ navigation }) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(2);
+  const [role, setRole] = useState(3);
   //1- admin 2- doctor 3- patient
-  const [hide, setHide] = useState(false);
+  const [gender, setGender] = useState(1);
+  const [hide, setHide] = useState(true);
   const [error, setError] = useState({});
 
   async function handleSubmit() {
@@ -44,6 +46,7 @@ export default function SignupScreen({ navigation }) {
         mobile,
         password,
         role,
+        gender,
       });
       if (response.status == 201) {
         let token = response.data?.token;
@@ -55,11 +58,6 @@ export default function SignupScreen({ navigation }) {
         await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
         await navigation.replace(await getScreen());
-        // response.data.user.role == 1
-        //   ? navigation.replace("DoctorHome")
-        //   : role == 2
-        //   ? navigation.replace("Home")
-        //   : navigation.replace("Admin");
       }
     } catch (error) {
       console.log("Error Signing in:", error, error?.err);
@@ -137,7 +135,7 @@ export default function SignupScreen({ navigation }) {
             <SelectDropDown
               data={["Doctor", "Patient"]}
               onSelect={(selectedItem, index) => {
-                setRole(index + 1);
+                setRole(index + 2);
               }}
               buttonTextAfterSelection={(selectedItem) => selectedItem}
               rowTextForSelection={(item) => item}
@@ -159,10 +157,34 @@ export default function SignupScreen({ navigation }) {
               }}
               selectedRowTextStyle={{ color: "white" }}
             />
+                      </View>
 
-            {error && error?.from === "name" && (
-              <Text className="text-xm text-red-600">{error?.msg}</Text>
-            )}
+<View className="mx-auto my-2 w-2/3">
+            <SelectDropDown
+              data={["Male", "Female"]}
+              onSelect={(selectedItem, index) => {
+                setGender(index + 1);
+              }}
+              buttonTextAfterSelection={(selectedItem) => selectedItem}
+              rowTextForSelection={(item) => item}
+              defaultButtonText={gender == 1 ? "Male" : "Female"}
+              buttonTextStyle={{ color: "black", fontWeight: 400 }}
+              buttonStyle={{
+                width: "100%",
+                backgroundColor: "#f3fbfe",
+                padding: 2,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "black",
+                borderRadius: 100,
+              }}
+              dropdownStyle={{ borderRadius: 10 }}
+              selectedRowStyle={{
+                backgroundColor: "blue",
+                borderRadius: 10,
+              }}
+              selectedRowTextStyle={{ color: "white" }}
+            />
           </View>
 
           <TouchableOpacity

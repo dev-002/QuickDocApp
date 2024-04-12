@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   Modal,
   TouchableOpacity,
-  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -22,14 +21,18 @@ export default function FormScreen({ route }) {
 
   const [dateModal, setDateModal] = useState(false);
   const [date, setDate] = useState();
-  const [patientName, setPatientName] = useState("");
+  const [patient, setPatient] = useState({});
 
-  function handleNameChange(propName) {
-    setPatientName(propName);
-  }
   function handleDateChange(propDate) {
     setDate(propDate);
   }
+
+  useEffect(() => {
+    async function fetchLoggedUser() {
+      setPatient(await AsyncStorage.getItem("loggedUser"));
+    }
+    fetchLoggedUser();
+  }, []);
 
   return (
     <>
@@ -129,32 +132,27 @@ export default function FormScreen({ route }) {
             <Text className="my-1 text-lg font-bold">Patient Name</Text>
 
             <View className="mx-5 my-1 px-2 py-2 border border-black/50 rounded-xl">
-              <TextInput
-                placeholder="Enter Name"
-                value={patientName}
-                onChange={handleNameChange}
-                className="px-2 py-1"
-              />
+              <Text className="px-2 py-1">value={patient.name}</Text>
             </View>
 
             {/* Patient Gender */}
             <Text className="my-1 text-lg font-bold">Patient Gender</Text>
             <View className="flex flex-row justify-around">
-              {/* male */}
-              <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
-                <Image
-                  source={require("../../../assets/Icon/Male.jpeg")}
-                  className="p-2 h-10 w-10"
-                />
-              </TouchableOpacity>
-
-              {/* female */}
-              <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
-                <Image
-                  source={require("../../../assets/Icon/Female.jpeg")}
-                  className="p-2 h-10 w-10"
-                />
-              </TouchableOpacity>
+              {patient.gender == 1 ? (
+                <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
+                  <Image
+                    source={require("../../../assets/Icon/Male.jpeg")}
+                    className="p-2 h-10 w-10"
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity className="p-1 border border-black/60 rounded-xl">
+                  <Image
+                    source={require("../../../assets/Icon/Female.jpeg")}
+                    className="p-2 h-10 w-10"
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 

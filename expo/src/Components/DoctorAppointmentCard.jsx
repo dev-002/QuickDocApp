@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 
 export default function DoctorAppointmentCard({ appointment_data }) {
+    
   return (
     <ScrollView>
       {appointment_data &&

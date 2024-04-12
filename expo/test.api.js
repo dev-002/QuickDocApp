@@ -1,4 +1,4 @@
-const ip = "192.168.1.35";
+const ip = "192.168.1.120";
 const baseUrl = `http://${ip}:5000/api/v1`;
 
 export default {
@@ -11,6 +11,7 @@ export default {
   },
   Doctor: {
     getDoctors: baseUrl + "/doctor/list", // get
+    getSpecialization: baseUrl + "/doctor/specialization", // get
   },
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post
