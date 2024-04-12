@@ -19,7 +19,7 @@ export default function SignupScreen({ navigation }) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(3);
+  // const [role, setRole] = useState(3);
   //1- admin 2- doctor 3- patient
   const [gender, setGender] = useState(1);
   const [hide, setHide] = useState(true);
@@ -45,7 +45,7 @@ export default function SignupScreen({ navigation }) {
         name,
         mobile,
         password,
-        role,
+        role: 3,
         gender,
       });
       if (response.status == 201) {
@@ -132,7 +132,7 @@ export default function SignupScreen({ navigation }) {
           </View>
 
           <View className="mx-auto my-2 w-2/3">
-            <SelectDropDown
+            {/* <SelectDropDown
               data={["Doctor", "Patient"]}
               onSelect={(selectedItem, index) => {
                 setRole(index + 2);
@@ -156,10 +156,13 @@ export default function SignupScreen({ navigation }) {
                 borderRadius: 10,
               }}
               selectedRowTextStyle={{ color: "white" }}
-            />
-                      </View>
+            /> */}
+            <Text className="w-full p-2 rounded border border-black/40 font-semibold">
+              Patient
+            </Text>
+          </View>
 
-<View className="mx-auto my-2 w-2/3">
+          <View className="mx-auto my-2 w-2/3">
             <SelectDropDown
               data={["Male", "Female"]}
               onSelect={(selectedItem, index) => {

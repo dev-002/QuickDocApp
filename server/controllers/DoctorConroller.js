@@ -1,5 +1,6 @@
 const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
+const Patient = require("../models/patient");
 const { ObjectId } = require("mongoose").Types;
 
 const listDoctor = async (req, res, next) => {
@@ -63,4 +64,24 @@ const getAllSpecialization = async (req, res, next) => {
   }
 };
 
-module.exports = { listDoctor, listAllAppointment, getAllSpecialization };
+const fetchPaitent = async (req, res, next) => {
+  let { id } = req.body;
+  id = id.id;
+  console.log("ID", id);
+  try {
+    const patient = await Patient.findById({ id });
+    console.log("Patient: ", patient);
+    if (patient) {
+      return res.status(200).json({ ack: true, patient });
+    } else return res.status(400).json({ ack: false, err: "No Patient Found" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
+module.exports = {
+  listDoctor,
+  listAllAppointment,
+  getAllSpecialization,
+  fetchPaitent,
+};

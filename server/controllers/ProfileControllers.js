@@ -1,6 +1,7 @@
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
 const jwt = require("jsonwebtoken");
+const Appointment = require('../models/appointment')
 
 const getProfile = async (req, res, next) => {
   let { token } = req.body;
@@ -55,4 +56,22 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { getProfile, updateProfile };
+const getAppointments = async (req, res, next) => {
+  let { id } = req.body;
+
+  console.log("Body: ",req.body);
+  try {
+    const appointmentList = await Appointment.find({ patientId: id }).populate('doctorId');
+    console.log("appointment: ",appointmentList);
+    if (appointmentList) {
+      return res.status(200).json({ ack: true, appointmentList });
+    } else
+      return res
+        .status(500)
+        .json({ ack: false, err: "Error fetching Appointments" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
+module.exports = { getProfile, updateProfile, getAppointments };

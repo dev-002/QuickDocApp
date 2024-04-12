@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 
 export default function DoctorAppointmentCard({ appointment_data }) {
-    
+  console.log(appointment_data)
   return (
     <ScrollView>
       {appointment_data &&
@@ -28,19 +28,29 @@ export default function DoctorAppointmentCard({ appointment_data }) {
                 </View>
                 {/* Doctor Detials */}
                 <View className="w-2/3 py-2">
-                  <Text className="text-lg font-bold">{appointment?.name}</Text>
+                  <Text className="text-lg font-bold">
+                    {appointment?.doctorId?.name}
+                  </Text>
                   <Text className="text-base font-medium">
-                    {appointment?.appointmentTime}
+                    {appointment?.timeSlot}
                   </Text>
                 </View>
               </View>
               {/* Status*/}
               <View className="w-1/3 flex justify-center items-center">
-                {appointment.status ? (
+                {/* {appointment.status ? (
                   <Text className="text-lg text-green-500">Completed</Text>
                 ) : (
                   <Text className="text-lg text-orange-500">Pending</Text>
-                )}
+                )} */}
+                <Text>
+                {appointment.status}{" "}
+                </Text>
+              </View>
+              <View className="w-1/3 flex justify-center items-center">
+                <Text>
+                {appointment.reason}{" "}
+                </Text>
               </View>
             </View>
           </TouchableOpacity>

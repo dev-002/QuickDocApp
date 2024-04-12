@@ -1,4 +1,4 @@
-const ip = "192.168.1.120";
+const ip = "192.168.0.157";
 const baseUrl = `http://${ip}:5000/api/v1`;
 
 export default {
@@ -7,11 +7,13 @@ export default {
     login: baseUrl + "/auth/login",
   },
   Profile: {
-    getProfile: baseUrl + "/profile",
+    getProfile: baseUrl + "/profile/profile",
+    getAppointments: baseUrl +'/profile/appointments', //post
   },
   Doctor: {
     getDoctors: baseUrl + "/doctor/list", // get
     getSpecialization: baseUrl + "/doctor/specialization", // get
+    fetchPatient: baseUrl+ '/doctor/fetchPaitent', //post
   },
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post

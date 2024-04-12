@@ -17,6 +17,7 @@ const AppointmentRequest = async (req, res, next) => {
         timeSlot,
         reason,
       });
+
       if (appointment) return res.status(201).json({ appointment, ack: true });
       else
         return res
@@ -55,36 +56,33 @@ const AppointmentResponse = async (req, res, next) => {
 const listTodayAppointment = async (req, res, next) => {
   let { doctorId, today, approved } = req.body;
   doctorId = new ObjectId(doctorId);
-  console.log(doctorId, typeof today, approved);
+  console.log(doctorId, today, approved);
 
   try {
     if (Boolean(doctorId)) {
       let appointmentList;
+      let oneMonth = new Date(today);
+      oneMonth.setMonth(oneMonth.getMonth()+1);
       if (approved) {
         appointmentList = await Appointment.find({
           doctorId,
-          date: "11-4-2024",
-          // date: today,
+          date: {
+            $gte: today,
+            $lt: oneMonth
+          },
           status: "approved",
         }).populate("patientId");
       } else {
+        let oneMonth = new Date(today);
+        oneMonth.setMonth(oneMonth.getMonth()+1);
         appointmentList = await Appointment.find({
-          // $and: [
-          // {
           doctorId,
-          date: today,
-          //   },
-          //   {
-          //     $or: [
-          //       { status: "pending" },
-          //       { status: "approved" },
-          //       { status: "rejected" },
-          //     ],
-          //   },
-          // ],
+          date: {
+            $gte: today,
+            $lt: oneMonth
+          },
         }).populate("patientId");
       }
-      console.log(appointmentList);
       if (appointmentList) {
         const appointmentSlot = {
           slot1: [],

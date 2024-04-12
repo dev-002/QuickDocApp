@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DoctorAppointmentCard from "../../Components/DoctorAppointmentCard";
+import axios from "axios";
+import URL from "../../../test.api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AppointmentListScreen({ navigation }) {
-  const appointment_data = [
-    { id: 1, name: "Doctor 1", appointmentTime: "8:10 PM", status: true },
-    { id: 2, name: "Doctor 2", appointmentTime: "5:40 PM", status: false },
-    { id: 3, name: "Doctor 3", appointmentTime: "11:10 AM", status: false },
-    { id: 4, name: "Doctor 2", appointmentTime: "9:20 AM", status: true },
-  ];
+  const [appointments, setAppointments] = useState([]);
+  useEffect(() => {
+    async function fetchAppointment() {
+      try {
+        let profile = await AsyncStorage.getItem("loggedUser");
+        profile = JSON.parse(profile);
+        const response = await axios.post(URL.Profile.getAppointments, {
+          id: profile._id,
+        });
+        console.log(response.data)
+        if (response.status == 200) {
+          setAppointments(response.data?.appointmentList);
+        }
+      } catch (err) {
+        console.log("Error fetching appointments: ", err);
+      }
+    }
+    fetchAppointment();
+  }, []);
+
   return (
     <>
       <StatusBar style="dark" />
@@ -25,7 +42,7 @@ export default function AppointmentListScreen({ navigation }) {
 
         {/* Appointment List */}
         <View className="pt-1 flex-1">
-          <DoctorAppointmentCard appointment_data={appointment_data} />
+          <DoctorAppointmentCard appointment_data={appointments} />
         </View>
       </SafeAreaView>
     </>

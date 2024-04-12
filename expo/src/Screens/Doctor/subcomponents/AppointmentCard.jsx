@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Alert } from "react-native";
 import SelectDropDown from "react-native-select-dropdown";
 import URL from "../../../../test.api";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
-export default function AppointmentCard({ app, index }) {
+export default function AppointmentCard({ app, index}) {
+  const navigation = useNavigation();
   const [status, setStatus] = useState(() =>
     app.status == "pending"
       ? 1
@@ -31,8 +33,12 @@ export default function AppointmentCard({ app, index }) {
       console.log("Error: ", err);
     }
   }
+
+  function handlePress(id){
+    navigation.replace("DoctorPatientRecord",{id});
+  }
   return (
-    <View className="mx-auto w-[80%] p-1 px-2 rounded-xl border">
+    <TouchableOpacity onPress={()=>handlePress(app?.patientId)} className="mx-auto w-[80%] p-1 px-2 rounded-xl border">
       <Text className="text-lg ">Appointment {index + 1}</Text>
       <Text className="text-lg">Patient Name: {app.patientId?.name}</Text>
       <Text className="text-lg">
@@ -85,19 +91,7 @@ export default function AppointmentCard({ app, index }) {
             borderRadius: 10,
           }}
         />
-        {/* <Text
-          className={
-            app.status === "pending"
-              ? "text-orange-500"
-              : app.status === "rejected"
-              ? "text-red-500"
-              : "text-green-500"
-          }
-        >
-          {" "}
-          {app.status}
-        </Text> */}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
