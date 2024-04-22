@@ -22,6 +22,9 @@ import DoctorPatientList from "./src/Screens/Doctor/DoctorPatientList";
 import PatientRecord from "./src/Screens/Doctor/PatientRecord";
 // Admin
 import AdminScreen from "./src/Screens/Admin/AdminScreen";
+import AppointmentList from "./src/Screens/Admin/AppointmentList";
+import DoctorForm from "./src/Screens/Admin/DoctorForm";
+import DoctorScreen from "./src/Screens/Admin/DoctorScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +33,7 @@ export default function App() {
     <UseLoggedInContex>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Welcome"
+          initialRouteName="AdminHome"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -65,7 +68,14 @@ export default function App() {
           <Stack.Screen name="DoctorPatientRecord" component={PatientRecord} />
 
           {/* Admin */}
-          <Stack.Screen name="Admin" component={AdminScreen} />
+
+          <Stack.Screen name="AdminHome" component={AdminScreen} />
+          <Stack.Screen
+            name="AdminAppointmentList"
+            component={AppointmentList}
+          />
+          <Stack.Screen name="AdminDoctorScreen" component={DoctorScreen} />
+          <Stack.Screen name="AdminDoctorSignup" component={DoctorForm} />
         </Stack.Navigator>
       </NavigationContainer>
     </UseLoggedInContex>
