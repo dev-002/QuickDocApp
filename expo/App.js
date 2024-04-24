@@ -8,15 +8,15 @@ import WelcomeScreen from "./src/Screens/WelcomeScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
 import SignupScreen from "./src/Screens/SignupScreen";
 // Patient
-import HomeScreen from "./src/Screens/Patient/HomeScreen";
-import AppointmentScreen from "./src/Screens/Patient/AppointmentScreen";
+import HomeScreen from "./src/Screens/Patient/PatientHomeScreen";
+import PatientAppointmentScreen from "./src/Screens/Patient/PatientAppointmentList";
 import FormScreen from "./src/Screens/Patient/FormScreen";
-import AppointmentListScreen from "./src/Screens/Patient/AppointmentListScreen";
 import AmbulanceEmergencyScreen from "./src/Screens/Patient/AmbulanceEmergencyScreen";
 import ProfileScreen from "./src/Screens/ProfileScreen";
 // Doctor
 import DoctorHomeScreen from "./src/Screens/Doctor/DoctorHomeScreen";
-import DoctorAppointmentList from "./src/Screens/Doctor/DoctorAppointmentList";
+import DoctorAppointmentList from "./src/Screens/Doctor/AppointmentList";
+import OlderAppointmentList from "./src/Screens/Doctor/OlderAppointmentList";
 import DoctorProfile from "./src/Screens/Doctor/DoctorProfile";
 import DoctorPatientList from "./src/Screens/Doctor/DoctorPatientList";
 import PatientRecord from "./src/Screens/Doctor/PatientRecord";
@@ -25,6 +25,7 @@ import AdminScreen from "./src/Screens/Admin/AdminScreen";
 import AppointmentList from "./src/Screens/Admin/AppointmentList";
 import DoctorForm from "./src/Screens/Admin/DoctorForm";
 import DoctorScreen from "./src/Screens/Admin/DoctorScreen";
+import PatientScreen from "./src/Screens/Admin/PatientScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,7 +34,7 @@ export default function App() {
     <UseLoggedInContex>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="AdminHome"
+          initialRouteName="Welcome"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -42,12 +43,11 @@ export default function App() {
 
           {/* Patient */}
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Appointments" component={AppointmentScreen} />
-          <Stack.Screen name="AppointmentForm" component={FormScreen} />
           <Stack.Screen
             name="AppointmentList"
-            component={AppointmentListScreen}
+            component={PatientAppointmentScreen}
           />
+          <Stack.Screen name="AppointmentForm" component={FormScreen} />
           <Stack.Screen
             name="AmbulanceEmergency"
             component={AmbulanceEmergencyScreen}
@@ -60,6 +60,10 @@ export default function App() {
             name="DoctorAppointmentList"
             component={DoctorAppointmentList}
           />
+          <Stack.Screen
+            name="DoctorAppointmentListOlder"
+            component={OlderAppointmentList}
+          />
           <Stack.Screen name="DoctorProfile" component={DoctorProfile} />
           <Stack.Screen
             name="DoctorPatientList"
@@ -68,7 +72,6 @@ export default function App() {
           <Stack.Screen name="DoctorPatientRecord" component={PatientRecord} />
 
           {/* Admin */}
-
           <Stack.Screen name="AdminHome" component={AdminScreen} />
           <Stack.Screen
             name="AdminAppointmentList"
@@ -76,6 +79,7 @@ export default function App() {
           />
           <Stack.Screen name="AdminDoctorScreen" component={DoctorScreen} />
           <Stack.Screen name="AdminDoctorSignup" component={DoctorForm} />
+          <Stack.Screen name="AdminPatientScreen" component={PatientScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </UseLoggedInContex>

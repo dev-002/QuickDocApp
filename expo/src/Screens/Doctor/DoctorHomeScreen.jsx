@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,89 +6,83 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import URL from "../../../test.api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 // Custom Components
 import Header from "../../Components/Header";
 import { useNavigation } from "@react-navigation/native";
+import TimeSlots from "./subcomponents/TimeSlots";
 
 export default function DoctorHomeScreen({ navigation }) {
   const [profile, setProfile] = useState({});
-  const [date, setDate] = useState([]);
+  const [date, setDate] = useState(() => new Date());
   const [time, setTime] = useState([]);
-  const [appointmentList, setAppointmentList] = useState({});
-  const [patientList, setPatientList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [appointmentList, setAppointmentList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   async function fetchAppointments() {
-    const date = new Date();
-    let today = [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(
-      "-"
-    );
+    const today = new Date();
     try {
-      const response = await axios.post(URL.Appointment.todayAppointment, {
-        doctorId: profile?._id,
-        today,
-        approved: true,
-      });
+      setLoading(true);
+      const response = await axios.post(
+        URL.Appointment.todayAppointment,
+        {
+          today,
+        },
+        {
+          headers: {
+            doctorid: profile?._id,
+          },
+        }
+      );
       console.log(response?.data);
       if (response.status == 200) {
-        // console.log(response.data);
         setAppointmentList(response.data?.appointmentList);
-        setPatientList(response.data?.PatientList);
         setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   }
 
-  function getPatientList() {
-    const timeMap = {
-      slot1: 12,
-      slot2: 14,
-      slot3: 16,
-      slot4: 18,
-      slot5: 20,
-      slot6: 23,
-    };
-    const list = [];
-    console.log("list: ", appointmentList);
-
-    for (let slot in appointmentList) {
-      console.log(slot);
-      if (appointmentList[slot].length > 0) {
-        appointmentList[slot].map((appointment) => {
-          const hour = new Date().getHours();
-          if (hour < timeMap["slot" + appointment.timeSlot]) list.push;
-        });
-      }
-    }
+  function fetchSlotsPatient() {
+    let slot = new Date();
+    let list = appointmentList.filter((app) => {
+      if (app.timeSlot == slot) return app?.patientId;
+    });
     return list;
   }
 
-  useEffect(() => {
-    let dat = new Date();
-    setTime([dat.getHours() % 12, dat.getMinutes()]);
-    setDate([dat.getDate(), dat.getMonth(), dat.getFullYear()]);
+  useFocusEffect(
+    useCallback(() => {
+      let dat = new Date();
+      setTime([
+        dat.getHours() === 12 ? 12 : dat.getHours() % 12,
+        dat.getMinutes(),
+      ]);
 
-    (async function () {
-      let user = await AsyncStorage.getItem("loggedUser").catch((err) =>
-        console.log(err)
-      );
-      user = JSON.parse(user);
-      setProfile({
-        ...user,
-      });
-    })();
+      (async function () {
+        try {
+          let user = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
+          setProfile({
+            ...user,
+          });
+        } catch (err) {
+          console.log("Error in Doctor Home Screen", err);
+        }
+      })();
 
-    fetchAppointments();
-  }, []);
+      fetchAppointments();
+    }, [])
+  );
 
   return (
     <>
@@ -116,7 +110,11 @@ export default function DoctorHomeScreen({ navigation }) {
                     <Text className="text-xl font-bold">Today:</Text>
 
                     <Text className="text-xl">
-                      {date[0] + " /" + date[1] + " /" + date[2]}
+                      {date.getDate() +
+                        " /" +
+                        date.getMonth() +
+                        " /" +
+                        date.getFullYear()}
                     </Text>
                   </View>
 
@@ -140,125 +138,11 @@ export default function DoctorHomeScreen({ navigation }) {
               <Text className="font-bold text-xl">Today's Appointments:</Text>
 
               <View className="flex flex-row flex-wrap justify-around">
-                {appointmentList?.slot1 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot1
-                        ? new Date().getHours() > 12
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 10 && new Date().getHours() < 12
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl `}
-                  >
-                    <Text className="text-center text-base">
-                      10:00 AM - 12:00 PM
-                    </Text>
-                  </View>
-                )}
-
-                {appointmentList?.slot2 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot2
-                        ? new Date().getHours() > 14
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 12 && new Date().getHours() < 14
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl`}
-                  >
-                    <Text className="text-center text-base">
-                      12:00 PM - 2:00 PM
-                    </Text>
-                  </View>
-                )}
-
-                {appointmentList?.slot3 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot3
-                        ? new Date().getHours() > 16
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 14 && new Date().getHours() < 16
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl`}
-                  >
-                    <Text className="text-center text-base">
-                      2:00 PM - 4:00 PM
-                    </Text>
-                  </View>
-                )}
-
-                {appointmentList?.slot4 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot4
-                        ? new Date().getHours() > 18
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 16 && new Date().getHours() < 18
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl`}
-                  >
-                    <Text className="text-center text-base">
-                      4:00 PM - 6:00 PM
-                    </Text>
-                  </View>
-                )}
-
-                {appointmentList?.slot5 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot5
-                        ? new Date().getHours() > 20
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 18 && new Date().getHours() < 20
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl`}
-                  >
-                    <Text className="text-center text-base">
-                      6:00 PM - 8:00 PM
-                    </Text>
-                  </View>
-                )}
-                {console.log("Slot 6:", appointmentList)}
-                {appointmentList?.slot6 || (
-                  <View
-                    className={`bg-${
-                      appointmentList?.slot6
-                        ? new Date().getHours() > 23
-                          ? "green"
-                          : "orange"
-                        : "neutral"
-                    }-300 w-[45%] my-2 px-2 py-2 border border-${
-                      new Date().getHours() >= 21 && new Date().getHours() < 23
-                        ? "red-500"
-                        : "black/50"
-                    } rounded-xl`}
-                  >
-                    <Text className="text-center text-base">
-                      9:00 PM - 11:00 PM
-                    </Text>
-                  </View>
-                )}
+                <TimeSlots slot={"10-12"} appointmentList={appointmentList} />
+                <TimeSlots slot={"12-14"} appointmentList={appointmentList} />
+                <TimeSlots slot={"15-17"} appointmentList={appointmentList} />
+                <TimeSlots slot={"17-19"} appointmentList={appointmentList} />
+                <TimeSlots slot={"21-23"} appointmentList={appointmentList} />
               </View>
             </View>
 
@@ -268,19 +152,40 @@ export default function DoctorHomeScreen({ navigation }) {
 
               <View className="flex flex-wrap justify-around">
                 <View className="mt-3">
-                  {patientList &&
-                    patientList.map((patient) => (
+                  {appointmentList &&
+                    fetchSlotsPatient().map((patient) => (
                       <View className="p-1 m-1 rounded-lg border border-black/40">
                         <Text>Name: {patient.name}</Text>
                         <Text>
                           Gender: {patient.gender == 1 ? "Male" : "Female"}
                         </Text>
                         <Text>Mobile: {patient.mobile}</Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            async function statusUpdate() {
+                              try {
+                                const response = await axios.post(
+                                  URL.Appointment.statusChange,
+                                  {
+                                    appointment_id: appointment?._id,
+                                    status: "completed",
+                                  }
+                                );
+                                if (response.status == 200) {
+                                  Alert.alert("Appointment Completed");
+                                }
+                              } catch (err) {
+                                console.log("Error: ", err);
+                              }
+                            }
+                            // statusUpdate();
+                          }}
+                        >
+                          <View className="rounded-xl bg-green-500">Tick</View>
+                        </TouchableOpacity>
                       </View>
                     ))}
                 </View>
-
-                {appointmentList && console.log(getPatientList())}
               </View>
             </View>
           </ScrollView>
@@ -328,46 +233,3 @@ function DoctorFooterMenu() {
     </View>
   );
 }
-
-// {/* <ScrollView>
-// {appointment_data &&
-//   appointment_data?.map((appointment) => (
-//     <TouchableOpacity
-//       key={appointment?.id}
-//       className="my-2 py-3 px-2 bg-indigo-100 border border-black/60 rounded-xl"
-//       onPress={() =>
-//         console.log(
-//           `Doctor Appointment: \nid: ${appointment.id} \nname: ${appointment.name}`
-//         )
-//       }
-//     >
-//       <View className="flex flex-row justify-start items-center">
-//         {/* Doctor Details */}
-//         <View className="w-2/3 flex flex-row justify-normal items-center">
-//           {/* Doctor Avatar */}
-//           <View className="w-1/3 p-1 mr-2">
-//             <Image
-//               source={require("../../assets/Icon/Doctor_Avatar.jpeg")}
-//               className="h-14 w-14 rounded-full"
-//             />
-//           </View>
-//           {/* Doctor Detials */}
-//           <View className="w-2/3 py-2">
-//             <Text className="text-lg font-bold">{appointment?.name}</Text>
-//             <Text className="text-base font-medium">
-//               {appointment?.appointmentTime}
-//             </Text>
-//           </View>
-//         </View>
-//         {/* Status*/}
-//         <View className="w-1/3 flex justify-center items-center">
-//           {appointment.status ? (
-//             <Text className="text-lg text-green-500">Completed</Text>
-//           ) : (
-//             <Text className="text-lg text-orange-500">Pending</Text>
-//           )}
-//         </View>
-//       </View>
-//     </TouchableOpacity>
-//   ))}
-// </ScrollView> */}

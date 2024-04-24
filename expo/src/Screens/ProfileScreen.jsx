@@ -5,7 +5,6 @@ import {
   Pressable,
   Image,
   TextInput,
-  FlatList,
   Modal,
   ScrollView,
 } from "react-native";

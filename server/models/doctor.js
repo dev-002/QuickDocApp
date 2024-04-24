@@ -44,7 +44,7 @@ const doctorSchema = new Schema({
     type: String,
   },
   leaveDays: {
-    type: [String],
+    type: [{ date: { type: Date, required: true } }],
     default: [],
   },
 });

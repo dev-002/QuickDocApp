@@ -7,13 +7,16 @@ export default {
     login: baseUrl + "/auth/login",
   },
   Profile: {
-    getProfile: baseUrl + "/profile/profile",
-    getAppointments: baseUrl + "/profile/appointments", //post
+    getProfile: baseUrl + "/patient/profile", //get, put
+    getAppointments: baseUrl + "/patient/appointments", //get
+    getSpecificScpecialization: baseUrl + "/patient/specific", //get
   },
   Doctor: {
     getDoctors: baseUrl + "/doctor/list", // get
     getSpecialization: baseUrl + "/doctor/specialization", // get
     fetchPatient: baseUrl + "/doctor/fetchPaitent", //post
+    fetchAppointmentDate: baseUrl + "/doctor/appointment", //get
+    fetchList: baseUrl + "/doctor/fetch/list", //get
   },
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post

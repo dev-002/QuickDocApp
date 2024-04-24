@@ -18,24 +18,57 @@ const listDoctor = async (req, res, next) => {
   }
 };
 
-const listAllAppointment = async (req, res, next) => {
-  let { doctorId } = req.body;
-  doctorId = new ObjectId(doctorId);
-
+const listAppointment = async (req, res, next) => {
+  let { doctor } = req;
+  let { date, status, search, searchType } = req.query;
   try {
-    if (Boolean(doctorId)) {
-      const appointmentList = await Appointment.find({
-        doctorId,
-      });
+    let appointments;
 
-      if (appointmentList)
-        return res.status(200).json({ ack: true, appointmentList });
-      else
-        return res
-          .status(500)
-          .json({ ack: false, err: "Error Fetching Appoinment" });
+    if (search != "")
+      switch (searchType) {
+        case "1": {
+          appointments = await Appointment.find({
+            doctorId: doctor._id,
+          })
+            .populate("doctorId")
+            .populate("patientId");
+
+          if (status !== "all")
+            appointments = appointments.filter(
+              (appointment) =>
+                appointment.patientId.name == search &&
+                appointment.status == status
+            );
+          else
+            appointments = appointments.filter(
+              (appointment) => appointment.patientId.name == search
+            );
+          break;
+        }
+      }
+    else if (status !== "all") {
+      appointments = await Appointment.find({ status, doctorId: doctor._id })
+        .populate("doctorId")
+        .populate("patientId");
     } else
-      return res.status(404).json({ ack: false, err: "No Values Provided" });
+      appointments = await Appointment.find({ doctorId: doctor._id })
+        .populate("doctorId")
+        .populate("patientId");
+
+    if (appointments) {
+      if (date) {
+        date = new Date(date);
+        appointments = appointments.filter((appointment) => {
+          console.log(
+            new Date(appointment.date),
+            date,
+            new Date(appointment.date) >= date
+          );
+          return new Date(appointment.date) >= date;
+        });
+        return res.status(200).json({ ack: true, appointments });
+      } else return res.status(200).json({ ack: true, appointments });
+    } else throw new Error("Error fetching Appointment List");
   } catch (err) {
     return res.status(500).json({ ack: false, err });
   }
@@ -65,13 +98,16 @@ const getAllSpecialization = async (req, res, next) => {
 };
 
 const fetchPaitent = async (req, res, next) => {
-  let { id } = req.body;
-  id = id.id;
-  console.log("ID", id);
+  let { id, activeTab } = req.body;
+  const doctor = req.doctor;
   try {
-    const patient = await Patient.findById({ id });
-    console.log("Patient: ", patient);
+    let patient = await Patient.findById(id).populate("medicalRecord");
     if (patient) {
+      if (activeTab === "specific")
+        patient = patient.filter(
+          (p) => p.medicalRecord?.doctorID === doctor._id
+        );
+
       return res.status(200).json({ ack: true, patient });
     } else return res.status(400).json({ ack: false, err: "No Patient Found" });
   } catch (err) {
@@ -79,9 +115,29 @@ const fetchPaitent = async (req, res, next) => {
   }
 };
 
+const fetchList = async (req, res, next) => {
+  try {
+    const doctorId = req.doctor._id;
+    let patientList = await Appointment.find({ doctorId }).populate(
+      "patientId"
+    );
+    if (patientList.length > 0) {
+      const list = [];
+      patientList.map((appointment) => {
+        if (!list.includes(appointment.patientId))
+          list.push(appointment.patientId);
+      });
+      return res.status(200).json({ ack: true, list });
+    }
+  } catch (err) {
+    return res.status(500).json({ ack: false, msg: err });
+  }
+};
+
 module.exports = {
   listDoctor,
-  listAllAppointment,
+  listAppointment,
   getAllSpecialization,
   fetchPaitent,
+  fetchList,
 };

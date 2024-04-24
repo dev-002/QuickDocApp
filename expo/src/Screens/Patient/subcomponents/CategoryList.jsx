@@ -2,9 +2,11 @@ import { TouchableOpacity, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 
-export default function CategoryList({ data }) {
+export default function CategoryList({ data, activeSpec, setActiveSpec }) {
   function handlePress(data) {
-    console.log("Title: ", data);
+    if (activeSpec === data) {
+      setActiveSpec("all");
+    } else setActiveSpec(data);
   }
   return data?.map((d, index) => (
     <TouchableOpacity

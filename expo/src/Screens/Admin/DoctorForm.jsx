@@ -50,7 +50,6 @@ const DoctorForm = ({ navigation }) => {
       Alert.alert("Error in adding Doctor");
       console.log("Error in adding Doctor: ", err);
     }
-    console.log("Adding doctor:", name, specialization);
   };
 
   function checkfunc() {

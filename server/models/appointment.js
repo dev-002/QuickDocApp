@@ -3,11 +3,12 @@ const { Schema } = mongoose;
 
 const appointmentSchema = new Schema({
   date: {
-    type: String,
+    type: Date,
     required: true,
   },
   timeSlot: {
     type: String,
+    // 10-12, 12-14, 15-17, 17-19, 21-23
     required: true,
   },
   patientId: {
@@ -24,7 +25,7 @@ const appointmentSchema = new Schema({
 
   status: {
     type: String,
-    enum: ["completed", "approved", "rejected", "pending"],
+    enum: ["completed", "approved", "rejected", "pending", "canceled"],
     default: "pending",
   },
 });

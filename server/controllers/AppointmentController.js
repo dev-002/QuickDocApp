@@ -1,4 +1,3 @@
-const appointment = require("../models/appointment");
 const Appointment = require("../models/appointment");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
@@ -54,58 +53,41 @@ const AppointmentResponse = async (req, res, next) => {
 };
 
 const listTodayAppointment = async (req, res, next) => {
-  let { doctorId, today, approved } = req.body;
-  doctorId = new ObjectId(doctorId);
-  console.log(doctorId, today, approved);
+  let { today } = req.body;
+  const doctor = req.doctor;
+  today = new Date(today);
+  let appointmentList;
 
   try {
-    if (Boolean(doctorId)) {
-      let appointmentList;
-      let oneMonth = new Date(today);
-      oneMonth.setMonth(oneMonth.getMonth()+1);
-      if (approved) {
-        appointmentList = await Appointment.find({
-          doctorId,
-          date: {
-            $gte: today,
-            $lt: oneMonth
-          },
-          status: "approved",
-        }).populate("patientId");
-      } else {
-        let oneMonth = new Date(today);
-        oneMonth.setMonth(oneMonth.getMonth()+1);
-        appointmentList = await Appointment.find({
-          doctorId,
-          date: {
-            $gte: today,
-            $lt: oneMonth
-          },
-        }).populate("patientId");
-      }
-      if (appointmentList) {
-        const appointmentSlot = {
-          slot1: [],
-          slot2: [],
-          slot3: [],
-          slot4: [],
-          slot5: [],
-          slot6: [],
-        };
-        const PatientList = [];
-        appointmentList.map((appointment) => {
-          appointmentSlot["slot" + appointment.timeSlot].push(appointment);
-          PatientList.push(appointment.patientId);
-        });
-        return res
-          .status(200)
-          .json({ ack: true, appointmentSlot, PatientList });
-      } else
-        return res
-          .status(500)
-          .json({ ack: false, err: "Error Fetching Appoinment" });
-    } else
-      return res.status(404).json({ ack: false, err: "No Values Provided" });
+    // let oneMonth = new Date(today);
+    // oneMonth.setMonth((oneMonth.getMonth() + 1) % 11);
+    // if (oneMonth < today) {
+    //   oneMonth.setFullYear(oneMonth.getFullYear() + 1);
+    // }
+
+    appointmentList = await Appointment.find({
+      doctorId: doctor._id,
+      // date: {
+      //   $gte: today,
+      // $lt: oneMonth,
+      // },
+      status: "approved",
+    }).populate("patientId");
+
+    if (appointmentList) {
+      appointmentList = appointmentList.filter((app) => {
+        if (new Date(app.date).getDate() === today.getDate()) return app;
+      });
+      appointmentList.sort((a, b) => {
+        return a.timeSlot - b.timeSlot;
+      });
+      const PatientList = [];
+      appointmentList.map((appointment) => {
+        PatientList.push(appointment.patientId);
+      });
+
+      return res.status(200).json({ ack: true, appointmentList, PatientList });
+    } else throw new Error("Error Fetching Appoinment");
   } catch (err) {
     return res.status(500).json({ ack: false, err });
   }

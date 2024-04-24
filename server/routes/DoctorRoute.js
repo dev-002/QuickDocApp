@@ -3,14 +3,17 @@ const router = express.Router();
 
 const {
   listDoctor,
-  listAllAppointment,
+  listAppointment,
   getAllSpecialization,
   fetchPaitent,
+  fetchList,
 } = require("../controllers/DoctorConroller");
+const verifyDoctor = require("../utilities/verifyDoctor");
 
 router.get("/list", listDoctor);
 router.get("/specialization", getAllSpecialization);
-router.post("/appointment/all", listAllAppointment);
-router.post('/fetchPaitent', fetchPaitent)
+router.get("/appointment", verifyDoctor, listAppointment);
+router.post("/fetchPaitent", verifyDoctor, fetchPaitent);
+router.get("/fetch/list", verifyDoctor, fetchList);
 
 module.exports = router;

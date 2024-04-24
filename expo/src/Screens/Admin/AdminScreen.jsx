@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import URL from "../../../test.api";
+import { CommonActions } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AdminDashboard = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -89,6 +91,13 @@ const AdminDashboard = ({ navigation }) => {
             onPress={() => navigation.navigate("AdminDoctorScreen")}
           >
             <Text className="text-center font-base text-lg"> Doctor List</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="my-1 p-2 bg-blue-300 rounded-xl"
+            onPress={() => navigation.navigate("AdminPatientScreen")}
+          >
+            <Text className="text-center font-base text-lg">Patient List</Text>
           </TouchableOpacity>
         </View>
       </View>

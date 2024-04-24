@@ -1,7 +1,7 @@
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
 const jwt = require("jsonwebtoken");
-const Appointment = require('../models/appointment')
+const Appointment = require("../models/appointment");
 
 const getProfile = async (req, res, next) => {
   let { token } = req.body;
@@ -57,21 +57,46 @@ const updateProfile = async (req, res, next) => {
 };
 
 const getAppointments = async (req, res, next) => {
-  let { id } = req.body;
+  const patient = req.patient;
 
-  console.log("Body: ",req.body);
   try {
-    const appointmentList = await Appointment.find({ patientId: id }).populate('doctorId');
-    console.log("appointment: ",appointmentList);
+    let date = new Date().setHours(0, 0, 0, 0);
+    const appointmentList = await Appointment.find({
+      patientId: patient._id,
+      date: {
+        $gte: date,
+      },
+    }).populate("doctorId");
     if (appointmentList) {
       return res.status(200).json({ ack: true, appointmentList });
-    } else
-      return res
-        .status(500)
-        .json({ ack: false, err: "Error fetching Appointments" });
+    } else throw new Error("Error fetching Appointments");
   } catch (err) {
     return res.status(500).json({ ack: false, err });
   }
 };
 
-module.exports = { getProfile, updateProfile, getAppointments };
+const getSpecificDoctor = async (req, res, next) => {
+  const { specialization } = req.query;
+
+  try {
+    let doctorList;
+    if (specialization != "all")
+      doctorList = await Doctor.find({
+        specialization,
+      });
+    else doctorList = await Doctor.find({});
+
+    if (doctorList) {
+      return res.status(200).json({ ack: true, doctorList });
+    } else throw new Error("Error fetching Appointments");
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
+module.exports = {
+  getProfile,
+  updateProfile,
+  getAppointments,
+  getSpecificDoctor,
+};

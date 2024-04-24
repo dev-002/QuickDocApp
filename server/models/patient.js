@@ -51,10 +51,10 @@ const patientSchema = new Schema({
   address: {
     type: String,
   },
-  medicalHistory: {
-    existing: { type: [String], default: null },
-    allergies: { type: [String], default: null },
-    medications: { type: [String], default: null },
+  medicalRecord: {
+    type: Schema.Types.ObjectId,
+    ref: "medicalRecord",
+    default: [],
   },
   emergencyContacts: { type: [contactSchema], default: null },
 });
