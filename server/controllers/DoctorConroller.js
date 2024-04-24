@@ -134,10 +134,62 @@ const fetchList = async (req, res, next) => {
   }
 };
 
+const applyLeave = async (req, res, next) => {
+  const doctor = req.doctor;
+  const { date, limit } = req.body;
+
+  try {
+    const user = await Doctor.findById(doctor._id);
+    const response = await Doctor.findByIdAndUpdate(
+      doctor._id,
+      {
+        $push: { leaveDays: { date, limit } },
+      },
+      { new: true }
+    );
+    if (response) {
+      return res.status(200).json({ ack: true, doctor: response });
+    } else return res.status(404).json({ ack: false, msg: "No User Found" });
+  } catch (err) {
+    return res.status(500).json({ ack: false, msg: err });
+  }
+};
+
+const fetchProfile = async (req, res, next) => {
+  const doctor = req.doctor;
+
+  try {
+    const response = await Doctor.findById(doctor._id);
+    if (response) {
+      return res.status(200).json({ ack: true, doctor: response });
+    } else throw new Error("Error while updating profile");
+  } catch (err) {
+    return res.status(500).json({ ack: false, msg: err });
+  }
+};
+
+const updateProfile = async (req, res, next) => {
+  const doctor = req.doctor;
+  const { updateData } = req.body;
+  try {
+    const response = await Doctor.findByIdAndUpdate(doctor._id, {
+      $set: { ...updateData },
+    });
+    if (response) {
+      return res.status(200).json({ ack: true, updatedDoctor: response });
+    } else throw new Error("Error while updating profile");
+  } catch (err) {
+    return res.status(500).json({ ack: false, msg: err });
+  }
+};
+
 module.exports = {
   listDoctor,
   listAppointment,
   getAllSpecialization,
   fetchPaitent,
   fetchList,
+  applyLeave,
+  updateProfile,
+  fetchProfile,
 };

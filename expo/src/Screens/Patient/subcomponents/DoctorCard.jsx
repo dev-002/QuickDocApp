@@ -1,14 +1,43 @@
-import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useNavigation } from "@react-navigation/native";
-import getDoctorAvailability from "../utility/getDoctorAvailability";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 export default function DoctorCard({ docList }) {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+
   function handleAppointDoc(doc) {
     navigation.navigate("AppointmentForm", { doctor: doc });
+  }
+
+  function getDoctorAvailability(doc) {
+    if (doc?.leaveDays.length == 0) return true;
+
+    let today = new Date().setHours(0, 0, 0, 0);
+
+    if (doc?.leaveDays?.some((d) => isSameDate(d.date, today))) {
+      let date2 = doc?.leaveDays?.find((d) => isSameDate(d.date, today));
+      if (date2 && date2?.limit === 0) {
+        return false;
+      }
+    }
+    return true;
+
+    function isSameDate(date1, date2) {
+      return (
+        date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear()
+      );
+    }
   }
 
   return docList
@@ -23,11 +52,21 @@ export default function DoctorCard({ docList }) {
       return (
         <View key={rowIndex + row} className="flex flex-row justify-between">
           {row.map((doc) => {
-            useEffect(() => {
-              doc.available = getDoctorAvailability(doc);
-            }, []);
+            useFocusEffect(
+              useCallback(() => {
+                doc.available = getDoctorAvailability(doc);
+                setLoading(false);
+              }, [])
+            );
 
-            return (
+            return loading ? (
+              <ActivityIndicator
+                className="flex-1 justify-center items-center"
+                key={doc._id}
+                size={"large"}
+                animating={loading}
+              />
+            ) : (
               <Animated.View
                 entering={FadeInDown.springify()
                   .duration(5000)
@@ -39,7 +78,7 @@ export default function DoctorCard({ docList }) {
                 {/* Doctor Avatar */}
                 <View className="mb-1">
                   <Image
-                    source={require("../../assets/Icon/Doctor_Avatar.jpeg")}
+                    source={require("../../../../assets/Icon/Doctor_Avatar.jpeg")}
                     className="h-20 w-20 rounded-full"
                   />
                 </View>

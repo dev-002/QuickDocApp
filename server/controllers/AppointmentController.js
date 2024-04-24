@@ -3,14 +3,13 @@ const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
 
 const AppointmentRequest = async (req, res, next) => {
-  let { patientId, doctorId, date, timeSlot, reason } = req.body;
-  patientId = new ObjectId(patientId);
+  let { doctorId, date, timeSlot, reason } = req.body;
   doctorId = new ObjectId(doctorId);
-
+  let patient = req.patient;
   try {
-    if (Boolean(patientId, doctorId, date, timeSlot, reason)) {
+    if (Boolean(doctorId, date, timeSlot, reason)) {
       const appointment = await Appointment.create({
-        patientId,
+        patientId: patient._id,
         doctorId,
         date,
         timeSlot,
@@ -18,15 +17,12 @@ const AppointmentRequest = async (req, res, next) => {
       });
 
       if (appointment) return res.status(201).json({ appointment, ack: true });
-      else
-        return res
-          .status(500)
-          .json({ err: "Error while creating appointment", ack: false });
+      else throw new Error("Error while creating appointment");
     } else return res.status(404).json({ err: "Values not provided" });
   } catch (err) {
     return res
       .status(500)
-      .json({ err, msg: "Error while creating appointment request" });
+      .json({ err, msg: "Error while creating appointment" });
   }
 };
 
@@ -58,28 +54,26 @@ const listTodayAppointment = async (req, res, next) => {
   today = new Date(today);
   let appointmentList;
 
-  try {
-    // let oneMonth = new Date(today);
-    // oneMonth.setMonth((oneMonth.getMonth() + 1) % 11);
-    // if (oneMonth < today) {
-    //   oneMonth.setFullYear(oneMonth.getFullYear() + 1);
-    // }
+  function isSame(a, b) {
+    return (
+      a.getDate() == b.getDate() &&
+      a.getMonth() == b.getMonth() &&
+      a.getFullYear() == b.getFullYear()
+    );
+  }
 
+  try {
     appointmentList = await Appointment.find({
       doctorId: doctor._id,
-      // date: {
-      //   $gte: today,
-      // $lt: oneMonth,
-      // },
       status: "approved",
     }).populate("patientId");
 
     if (appointmentList) {
       appointmentList = appointmentList.filter((app) => {
-        if (new Date(app.date).getDate() === today.getDate()) return app;
+        if (isSame(new Date(app.date), today)) return app;
       });
       appointmentList.sort((a, b) => {
-        return a.timeSlot - b.timeSlot;
+        return a.timeSlot.split("-")[0] - b.timeSlot.split("-")[0];
       });
       const PatientList = [];
       appointmentList.map((appointment) => {

@@ -1,11 +1,15 @@
 import { View, Pressable, Text } from "react-native";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import Animated, {
   withTiming,
   useSharedValue,
   Easing,
 } from "react-native-reanimated";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import {
+  CommonActions,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Header() {
@@ -13,15 +17,16 @@ export default function Header() {
   const logoX = useSharedValue(100);
   const TextX = useSharedValue(300);
 
-  useEffect(() => {
-    logoX.value = 100;
-    TextX.value = 300;
-    setTimeout(() => {
-      logoX.value = withTiming(0, { duration: 700, easing: Easing.linear });
-      TextX.value = withTiming(0, { duration: 700, easing: Easing.linear });
-    }, 500);
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      logoX.value = 100;
+      TextX.value = 300;
+      setTimeout(() => {
+        logoX.value = withTiming(0, { duration: 700, easing: Easing.linear });
+        TextX.value = withTiming(0, { duration: 700, easing: Easing.linear });
+      }, 500);
+    }, [])
+  );
   async function handleLogout() {
     await AsyncStorage.removeItem("token").catch((err) => console.log(err));
     await AsyncStorage.removeItem("loggedUser").catch((err) =>

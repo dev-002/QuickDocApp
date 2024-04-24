@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 
 const contactSchema = {
   name: String,
-  relationship: String,
   contact: Number,
 };
 

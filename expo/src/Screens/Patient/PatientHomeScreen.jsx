@@ -18,7 +18,7 @@ import URL from "../../../test.api";
 import axios from "axios";
 // Custom components
 import CategoryList from "./subcomponents/CategoryList";
-import DoctorCard from "../../Components/DoctorCard";
+import DoctorCard from "./subcomponents/DoctorCard";
 import Header from "../../Components/Header";
 import FooterMenu from "../../Components/FooterMenu";
 import { useFocusEffect } from "@react-navigation/native";

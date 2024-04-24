@@ -34,6 +34,7 @@ export default function AllAppointmentList({ navigation }) {
             },
             params: { status: activeTab },
           });
+          console.log(response.data);
           if (response.status == 200) {
             setAppointmentList(response.data?.appointmentList);
             setLoading(false);

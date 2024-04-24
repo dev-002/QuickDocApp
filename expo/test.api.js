@@ -14,9 +14,11 @@ export default {
   Doctor: {
     getDoctors: baseUrl + "/doctor/list", // get
     getSpecialization: baseUrl + "/doctor/specialization", // get
-    fetchPatient: baseUrl + "/doctor/fetchPaitent", //post
+    fetchPatient: baseUrl + "/doctor/fetchPaitent", // post
     fetchAppointmentDate: baseUrl + "/doctor/appointment", //get
-    fetchList: baseUrl + "/doctor/fetch/list", //get
+    fetchList: baseUrl + "/doctor/fetch/list", // get,
+    applyLeave: baseUrl + "/doctor/leave", // post
+    updateProfile: baseUrl + "/doctor/profile", // put, get
   },
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post

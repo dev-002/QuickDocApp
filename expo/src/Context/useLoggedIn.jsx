@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, createContext, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useLoggedIn = createContext();
@@ -10,7 +10,6 @@ export default function useLoggedInContex({ children }) {
       await AsyncStorage.getItem("token", () => setIsLogged(true));
     })();
   }, [isLogged]);
-
   return (
     <useLoggedIn.Provider value={[isLogged, setIsLogged]}>
       {children}

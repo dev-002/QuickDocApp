@@ -29,6 +29,11 @@ const TabBar = ({ activeTab, setActiveTab }) => {
         isActive={activeTab === "completed"}
         onPress={() => setActiveTab("completed")}
       />
+      <TabButton
+        label="Cancled"
+        isActive={activeTab === "cancled"}
+        onPress={() => setActiveTab("cancled")}
+      />
     </View>
   );
 };

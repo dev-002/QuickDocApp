@@ -11,7 +11,7 @@ const verifyPatient = require("../utilities/verifyPatient");
 
 router.get("/profile", getProfile);
 router.put("/profile", updateProfile);
-router.get("/appointments", verifyPatient, getAppointments);
-router.get("/specific", verifyPatient, getSpecificDoctor);
+router.get("/appointments", getAppointments);
+router.get("/specific", getSpecificDoctor);
 
 module.exports = router;

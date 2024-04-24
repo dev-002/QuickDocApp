@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, Modal, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Modal,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  Pressable,
+  KeyboardAvoidingView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -20,30 +30,48 @@ export default function FormScreen({ route }) {
   const [date, setDate] = useState();
   const [patient, setPatient] = useState({});
   const [timeSlot, setTimeSlot] = useState("");
-  const [reason, setReason ] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleDateChange(propDate) {
     setDate(propDate);
+    setDateModal(false);
   }
 
   async function handleSubmit() {
     try {
-      const response = await axios.post(URL.Appointment.appointmentReqest, {
-        patientId: patient._id, doctorId: doc._id, date, timeSlot, reason
-      });
+      setLoading(true);
+      const response = await axios.post(
+        URL.Appointment.appointmentReqest,
+        {
+          doctorId: doc._id,
+          date,
+          timeSlot,
+          reason,
+        },
+        {
+          headers: {
+            patientId: patient._id,
+          },
+        }
+      );
+
       console.log(response.data);
       if (response.status == 201) {
-        navigation.replace("Appointments");
+        setLoading(false);
+        Alert.alert("Appointment set successfully");
+        navigation.replace("AppointmentList");
       }
     } catch (err) {
       console.log("Error in Appointment Submit: ", err);
+      Alert.alert("Error in Appointment Submit");
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     async function fetchLoggedUser() {
-      let user = await AsyncStorage.getItem("loggedUser");
-      user = await JSON.parse(user);
+      let user = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
       setPatient(user);
     }
     fetchLoggedUser();
@@ -111,68 +139,108 @@ export default function FormScreen({ route }) {
                 </View>
               </View>
             </Modal>
+
             {/* Available Slots */}
             <Text className="my-1 text-lg font-bold">Available Slots</Text>
 
             <View className="flex flex-row flex-wrap justify-around">
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("1")}>
+              <Pressable
+                onPress={() => setTimeSlot("10-12")}
+                className={`w-[45%] my-2 px-2 py-2 rounded-xl ${
+                  timeSlot == "10-12"
+                    ? "border-2 border-red-700"
+                    : "border border-black/50"
+                }`}
+              >
+                <Text className="text-center text-base">
                   10:00 AM - 12:00 PM
                 </Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("2")}>
+              </Pressable>
+              <Pressable
+                onPress={() => setTimeSlot("12-14")}
+                className={`w-[45%] my-2 px-2 py-2 rounded-xl ${
+                  timeSlot == "12-14"
+                    ? "border-2 border-red-700"
+                    : "border border-black/50"
+                }`}
+              >
+                <Text className="text-center text-base">
                   12:00 PM - 2:00 PM
                 </Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("3")}>2:00 PM - 4:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("4")}>4:00 PM - 6:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("5")}>6:00 PM - 8:00 PM</Text>
-              </View>
-              <View className="w-[45%] my-2 px-2 py-2 border border-black/50 rounded-xl">
-                <Text className="text-center text-base" onPress={()=>setTimeSlot("6")}>
+              </Pressable>
+              <Pressable
+                onPress={() => setTimeSlot("15-17")}
+                className={`w-[45%] my-2 px-2 py-2 rounded-xl ${
+                  timeSlot == "15-17"
+                    ? "border-2 border-red-700"
+                    : "border border-black/50"
+                }`}
+              >
+                <Text className="text-center text-base">3:00 PM - 5:00 PM</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setTimeSlot("17-19")}
+                className={`w-[45%] my-2 px-2 py-2 rounded-xl ${
+                  timeSlot == "17-19"
+                    ? "border-2 border-red-700"
+                    : "border border-black/50"
+                }`}
+              >
+                <Text className="text-center text-base">5:00 PM - 7:00 PM</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setTimeSlot("21-23")}
+                className={`w-[45%] my-2 px-2 py-2 rounded-xl ${
+                  timeSlot == "21-23"
+                    ? "border-2 border-red-700"
+                    : "border border-black/50"
+                }`}
+              >
+                <Text className="text-center text-base">
                   9:00 PM - 11:00 PM
                 </Text>
-              </View>
+              </Pressable>
             </View>
           </View>
 
           <View className="m-1">
             <Text className="text-lg font-bold">Reason: </Text>
-            <TextInput placeholder="Enter reason"
-            value={reason}
-            onChangeText={(text)=>setReason(text)}
-            className=""
-            />
+            <KeyboardAvoidingView behavior="position">
+              <TextInput
+                placeholder="Enter reason"
+                value={reason}
+                multiline={true}
+                onChangeText={(text) => setReason(text)}
+                className="p-1 text-lg border-b"
+              />
+            </KeyboardAvoidingView>
           </View>
 
           {/* Patient Details */}
-          <View className="mt-2">
+          <View className="mt-2 mb-6">
             <View className="flex flex-row justify-around">
-              <Text className="my-1 font-bold">Patient Name</Text>
-              <Text className="px-2 text-lg py-1">{patient.name}</Text>
-
-              <Text className="my-1 font-bold">Patient Gender</Text>
+              <Text className="my-1 font-bold text-lg">Patient Name</Text>
+              <Text className="px-2 text-base py-1 text-lg">
+                {patient.name}
+              </Text>
+            </View>
+            <View className="flex flex-row justify-around">
+              <Text className="my-1 font-bold text-lg">Patient Gender</Text>
               {patient.gender == 1 ? (
                 <Image
                   source={require("../../../assets/Icon/Male.jpeg")}
-                  className="p-2 h-10 w-10"
+                  className="p-2 h-8 w-8"
                 />
               ) : (
                 <Image
                   source={require("../../../assets/Icon/Female.jpeg")}
-                  className="p-2 h-10 w-10"
+                  className="p-2 h-8 w-8"
                 />
               )}
             </View>
           </View>
 
-          <TouchableOpacity className="mt-5">
+          <TouchableOpacity className="mt-5 relative bottom-8">
             <LinearGradient
               colors={["#46b3ff", "#0067af", "#35005b"]}
               className="p-2 align-center rounded-xl"
