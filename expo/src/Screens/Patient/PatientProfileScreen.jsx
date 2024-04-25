@@ -17,6 +17,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import URL from "../../../test.api";
 import ContactModalComp from "./subcomponents/ContactModalComp";
+import Avatar from "../../../assets/Icon/profile.png";
+import MedicalRecordModalComp from "./subcomponents/MedicalRecordModalComp";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -24,20 +26,36 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState({});
   const [contactModal, setContactModal] = useState(false);
+  const [medicalRecordModal, setMedicalRecordModal] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      (async function () {
-        await AsyncStorage.getItem("loggedUser")
-          .then(async (data) => {
-            data = await JSON.parse(data);
+      async function fetchPatient() {
+        try {
+          setLoading(true);
+          let patient = await JSON.parse(
+            await AsyncStorage.getItem("loggedUser")
+          );
+          const response = await axios.get(URL.Profile.getProfile, {
+            headers: { patientId: patient._id },
+          });
+          if (response.status === 200) {
+            await AsyncStorage.setItem(
+              "loggedUser",
+              JSON.stringify(response.data?.patient)
+            );
             setPatient({
-              ...data,
-              avatar: require("../../../assets/Icon/profile.png"),
+              ...response.data?.patient,
             });
-          })
-          .catch((err) => console.log(err));
-      })();
+            setLoading(false);
+          }
+        } catch (err) {
+          setLoading(false);
+          Alert.alert("Error fetching patient profile");
+          console.log("Error fetching patient profile", err);
+        }
+      }
+      fetchPatient();
     }, [])
   );
 
@@ -45,7 +63,7 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
       const response = await axios.put(
-        URL,
+        URL.Profile.getProfile,
         { updateData: patient },
         {
           headers: {
@@ -54,6 +72,7 @@ export default function ProfileScreen() {
         }
       );
       if (response.status === 200) {
+        Alert.alert("Profile Update Successfull");
         setPatient(response.data?.updatedPatient);
         setLoading(false);
       }
@@ -110,10 +129,7 @@ export default function ProfileScreen() {
           {/* Personal Details */}
           <View className="flex flex-row justify-between items-center">
             <Pressable className="h-[60%] bg-indigo-200 w-1/3 flex justify-center items-center border-2 border-black/40 rounded-3xl">
-              <Image
-                source={patient.avatar}
-                className="h-12 w-12 rounded-full"
-              />
+              <Image source={Avatar} className="h-12 w-12 rounded-full" />
             </Pressable>
             <View className="px-3 w-2/3">
               <TextInput
@@ -169,7 +185,7 @@ export default function ProfileScreen() {
               <Text className="my-1 font-bold text-lg">Address:</Text>
               <TextInput
                 multiline={true}
-                value={patient.address}
+                value={patient?.address?.toString()}
                 placeholder="Enter the address"
                 className={`p-1 h-10 w-full border border-black/70 rounded-xl`}
                 onChangeText={(text) => handleChange(text, "address")}
@@ -199,7 +215,7 @@ export default function ProfileScreen() {
                         <Text className="w-[30%] font-bold my-2 p-1 border border-black/40 rounded-lg">
                           Mobile:{" "}
                           <Text className="text-base font-light">
-                            {contact?.contact.toString()}
+                            {contact?.contact?.toString()}
                           </Text>
                         </Text>
                       </>
@@ -236,7 +252,7 @@ export default function ProfileScreen() {
 
             {loading ? (
               <View className="my-1 py-2 bg-blue-400 rounded-xl">
-                <ActivityIndicator size={"large"} animating={loading} />{" "}
+                <ActivityIndicator size={"large"} animating={loading} />
               </View>
             ) : (
               <Pressable
@@ -248,6 +264,21 @@ export default function ProfileScreen() {
                 </Text>
               </Pressable>
             )}
+
+            <Pressable
+              onPress={() => setMedicalRecordModal(true)}
+              className="my-1 py-2 bg-blue-400 rounded-xl"
+            >
+              <Text className="w-full mx-auto text-center text-lg text-white">
+                Show Medical Records
+              </Text>
+            </Pressable>
+
+            <MedicalRecordModalComp
+              setMedicalRecordModal={setMedicalRecordModal}
+              medicalRecordModal={medicalRecordModal}
+              record={patient?.medicalRecords}
+            />
           </ScrollView>
         </ScrollView>
       </SafeAreaView>

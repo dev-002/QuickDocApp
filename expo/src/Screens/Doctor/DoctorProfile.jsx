@@ -17,6 +17,7 @@ import URL from "../../../test.api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SelectDropdown from "react-native-select-dropdown";
 import ApplyLeaveComp from "./subcomponents/ApplyLeaveComp";
+import Avatar from "../../../assets/Icon/profile.png";
 
 export default function DoctorProfile({ navigation }) {
   const [doctor, setDoctor] = useState({});
@@ -32,9 +33,9 @@ export default function DoctorProfile({ navigation }) {
         });
 
         if (response.status === 200) {
+          console.log("Response: ", response.data?.doctor);
           setDoctor({
             ...response.data?.doctor,
-            avatar: require("../../../assets/Icon/profile.png"),
           });
           await AsyncStorage.setItem(
             "loggedUser",
@@ -48,6 +49,7 @@ export default function DoctorProfile({ navigation }) {
   async function updateProfile() {
     try {
       setLoading(true);
+      console.log("to be updated: ", doctor);
       const user = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
       const response = await axios.put(
         URL.Doctor.updateProfile,
@@ -78,7 +80,7 @@ export default function DoctorProfile({ navigation }) {
       case "specialization": {
         setDoctor((prevProfile) => ({
           ...prevProfile,
-          [field]: Number(value),
+          [field]: value,
         }));
         break;
       }
@@ -128,15 +130,12 @@ export default function DoctorProfile({ navigation }) {
           {/* Personal Details */}
           <View className="flex flex-row justify-between items-center">
             <Pressable className="h-[60%] bg-indigo-200 w-1/3 flex justify-center items-center border-2 border-black/40 rounded-3xl">
-              <Image
-                source={doctor.avatar}
-                className="h-12 w-12 rounded-full"
-              />
+              <Image source={Avatar} className="h-12 w-12 rounded-full" />
             </Pressable>
             <View className="px-3 w-2/3">
               <TextInput
                 value={doctor.name}
-                placeholder="Full Name"
+                placeholder="Name"
                 className="my-1 p-1 border border-black/40 rounded-lg"
                 onChangeText={(text) => handleChange(text, "name")}
               />
@@ -197,9 +196,8 @@ export default function DoctorProfile({ navigation }) {
             <View className="w-1/2 flex flex-row justify-normal items-center">
               <Text className="w-full text-lg">Specialization:</Text>
               <TextInput
-                value={doctor.specialization?.toString()}
-                inputMode="numeric"
-                placeholder="Enter specialization (in yrs)"
+                value={doctor.specialization}
+                placeholder="Enter specialization"
                 className={"my-1 p-1 border border-black/40 rounded-lg"}
                 onChangeText={(text) => handleChange(text, "specialization")}
               />
@@ -210,7 +208,6 @@ export default function DoctorProfile({ navigation }) {
             contentContainerStyle={{ flexGrow: 1 }}
             className="flex-1"
           >
-            {console.log(doctor, doctor?.leaveDays)}
             {doctor?.leaveDays?.length > 0 ? (
               doctor?.leaveDays?.map((leave, index) => (
                 <View
@@ -234,7 +231,7 @@ export default function DoctorProfile({ navigation }) {
 
             {loading ? (
               <View className="my-1 py-2 bg-blue-400 rounded-xl">
-                <ActivityIndicator size={"large"} animating={loading} />{" "}
+                <ActivityIndicator size={"large"} animating={loading} />
               </View>
             ) : (
               <Pressable

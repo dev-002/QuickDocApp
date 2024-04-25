@@ -59,6 +59,7 @@ const patientSchema = new Schema({
 });
 
 patientSchema.pre("save", function (next) {
+  console.log("save");
   if (this.isNew) {
     bcrypt.genSalt(10, (err, salt) => {
       if (err) {

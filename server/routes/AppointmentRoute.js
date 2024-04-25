@@ -10,7 +10,7 @@ const verifyPatient = require("../utilities/verifyPatient");
 const router = express.Router();
 
 router.post("/", verifyPatient, AppointmentRequest);
-router.post("/today", verifyDoctor, listTodayAppointment);
+router.get("/today", verifyDoctor, listTodayAppointment);
 router.post("/statusChange", AppointmentResponse);
 
 module.exports = router;

@@ -4,13 +4,14 @@ const Appointment = require("../models/appointment");
 
 const getProfile = async (req, res, next) => {
   let patient = req.patient;
-
   try {
     if (patient.role == 3) {
-      const patient = await Patient.findOne({ _id: patient._id });
+      patient = await Patient.findById(patient._id)
+        .populate("medicalRecord")
+        .populate("doctorId");
+      if (patient) return res.status(200).json({ ack: true, patient });
+      else return res.status(404).json({ ack: false, err: "No user found" });
     }
-    if (patient) return res.status(200).json({ ack: true, patient });
-    else return res.status(404).json({ ack: false, err: "No user found" });
   } catch (error) {
     return res.status(500).json({ ack: false, err: error });
   }
@@ -26,7 +27,9 @@ const updateProfile = async (req, res, next) => {
         $set: { ...updateData },
       });
       if (patient) {
-        let updatedPatient = await Patient.findById(patient._id);
+        let updatedPatient = await Patient.findById(patient._id)
+          .populate("medicalRecord")
+          .populate("doctorId");
         return res.status(200).json({ ack: true, updatedPatient });
       } else throw new Error("Error updating user profile");
     }
@@ -37,16 +40,22 @@ const updateProfile = async (req, res, next) => {
 
 const getAppointments = async (req, res, next) => {
   const patient = req.patient;
-
+  const { status } = req.query;
   try {
     let date = new Date().setHours(0, 0, 0, 0);
-
-    const appointmentList = await Appointment.find({
-      patientId: patient._id,
-      // date: {
-      //   $gte: date,
-      // },
-    }).populate("doctorId");
+    let appointmentList;
+    if (status == "all") {
+      appointmentList = await Appointment.find({
+        patientId: patient._id,
+        // date: {
+        //   $gte: date,
+        // },
+      }).populate("doctorId");
+    } else
+      appointmentList = await Appointment.find({
+        patientId: patient._id,
+        status,
+      }).populate("doctorId");
     if (appointmentList) {
       return res.status(200).json({ ack: true, appointmentList });
     } else throw new Error("Error fetching Appointments");

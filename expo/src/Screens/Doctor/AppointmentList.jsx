@@ -32,10 +32,9 @@ export default function AllAppointmentList({ navigation }) {
       let date = new Date();
       setLoading(true);
       const doctor = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
-      console.log("Doctor: ", doctor);
       const response = await axios.get(URL.Doctor.fetchAppointmentDate, {
         headers: {
-          doctorid: doctor._id,
+          doctorId: doctor._id,
         },
         params: { date, status: activeTab, search, searchType },
       });

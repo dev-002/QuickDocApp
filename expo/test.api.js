@@ -23,7 +23,7 @@ export default {
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post
     statusChange: baseUrl + "/appointment/statusChange", // post
-    todayAppointment: baseUrl + "/appointment/today", // post
+    todayAppointment: baseUrl + "/appointment/today", // get
   },
   Admin: {
     fetchAnalytic: baseUrl + "/admin/anayltic", //get

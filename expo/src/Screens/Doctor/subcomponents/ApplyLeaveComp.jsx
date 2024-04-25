@@ -24,14 +24,46 @@ export default function ApplyLeaveComp({
   const today = new Date();
   const startDate = getFormatedDate(today.setDate(today.getDate() + 1));
 
+  function isSame(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    console.log(`a: ${a} type: ${typeof a} b: ${b} type: ${typeof b}`);
+    if (
+      a?.getdate() === b?.getDate() &&
+      a?.getMonth() === b?.getMonth() &&
+      a?.getFullYear() === b?.getFullYear()
+    )
+      return true;
+    else return false;
+  }
+
   async function applyFunc() {
     try {
-      let doctor = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
       setLoading(true);
+      let doctor = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
       console.log(`date: ${date} limit: ${limit}`);
+      let leave;
+      if (doctor?.leaveDays?.length == 0) {
+        leave = [{ date, limit }];
+      } else {
+        const existingEntryIndex = doctor?.leaveDays?.findIndex((entry) => {
+          entry.date = new Date(entry.date);
+          return isSame(entry.date, date);
+        });
+
+        if (existingEntryIndex !== -1) {
+          // If an entry exists, update it
+          doctor.leaveDays[existingEntryIndex].limit = limit;
+        } else {
+          // If no entry exists, push a new entry
+          doctor.leaveDays.push({ date, limit });
+        }
+        leave = [...doctor?.leaveDays];
+      }
+
       const response = await axios.post(
         URL.Doctor.applyLeave,
-        { date, limit },
+        { leave: ld },
         {
           headers: {
             doctorid: doctor._id,

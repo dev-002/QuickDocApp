@@ -4,63 +4,28 @@ const bcrypt = require("bcrypt");
 const { genToken } = require("../utilities/AuthToken");
 
 const RegisterController = async (req, res, next) => {
-  const { role } = req.body;
-
   try {
-    // doctor
-    if (role == 2) {
-      const { name, mobile, password, gender } = req.body;
-
-      if (Boolean(name && mobile && password && gender)) {
-        let doctor = await Doctor.create({
-          name,
-          mobile,
-          password,
-          gender,
-        });
-        if (doctor) {
-          const token = genToken(doctor._id, doctor.role, doctor.name);
-          if (token) {
-            doctor = { ...doctor._doc, password: null };
-            return res.status(201).json({ ack: true, user: doctor, token });
-          } else
-            return res
-              .status(500)
-              .json({ ack: false, err: "Error Generating Token" });
+    const { name, password, mobile, gender } = req.body;
+    if (Boolean(name && password && mobile && gender)) {
+      console.log("Req body:", req.body);
+      let patient = await Patient.create({
+        role: 3,
+        name,
+        password,
+        mobile,
+        gender,
+      });
+      console.log("Patient saved");
+      if (patient) {
+        const token = genToken(patient._id, patient.role, patient.name);
+        if (token) {
+          patient = { ...patient._doc, password: null };
+          return res.status(201).json({ ack: true, user: patient, token });
         } else
           return res
             .status(500)
-            .json({ ack: false, msg: "Error Creating doctor document" });
-      } else
-        return res.status(500).json({ ack: false, err: "Values not provided" });
-    }
-    // patient or admin
-    else {
-      const { name, password, mobile, gender } = req.body;
-      
-      if (Boolean(name && password && mobile && gender)) {
-        let patient = await Patient.create({
-          role,
-          name,
-          password,
-          mobile,
-          gender,
-        });
-        if (patient) {
-          const token = genToken(patient._id, patient.role, patient.name);
-          if (token) {
-            patient = { ...patient._doc, password: null };
-            return res.status(201).json({ ack: true, user: patient, token });
-          } else
-            return res
-              .status(500)
-              .json({ ack: false, err: "Error Generating Token" });
-        } else
-          return res
-            .status(500)
-            .json({ ack: false, msg: "Error Creating patient document" });
-      } else
-        return res.status(500).json({ ack: false, err: "Values not provided" });
+            .json({ ack: false, err: "Error Generating Token" });
+      } else throw new Error("Error Creating patient document");
     }
   } catch (err) {
     return res.status(400).json({ ack: false, err });

@@ -19,7 +19,7 @@ const listDoctor = async (req, res, next) => {
 };
 
 const listAppointment = async (req, res, next) => {
-  let { doctor } = req;
+  let doctor = req.doctor;
   let { date, status, search, searchType } = req.query;
   try {
     let appointments;
@@ -59,11 +59,6 @@ const listAppointment = async (req, res, next) => {
       if (date) {
         date = new Date(date);
         appointments = appointments.filter((appointment) => {
-          console.log(
-            new Date(appointment.date),
-            date,
-            new Date(appointment.date) >= date
-          );
           return new Date(appointment.date) >= date;
         });
         return res.status(200).json({ ack: true, appointments });
@@ -136,7 +131,7 @@ const fetchList = async (req, res, next) => {
 
 const applyLeave = async (req, res, next) => {
   const doctor = req.doctor;
-  const { date, limit } = req.body;
+  const { leave } = req.body;
 
   try {
     const user = await Doctor.findById(doctor._id);
@@ -176,6 +171,7 @@ const updateProfile = async (req, res, next) => {
       $set: { ...updateData },
     });
     if (response) {
+      console.log("updated success");
       return res.status(200).json({ ack: true, updatedDoctor: response });
     } else throw new Error("Error while updating profile");
   } catch (err) {

@@ -49,9 +49,8 @@ const AppointmentResponse = async (req, res, next) => {
 };
 
 const listTodayAppointment = async (req, res, next) => {
-  let { today } = req.body;
   const doctor = req.doctor;
-  today = new Date(today);
+  let today = new Date();
   let appointmentList;
 
   function isSame(a, b) {

@@ -28,20 +28,17 @@ export default function DoctorHomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   async function fetchAppointments() {
-    const today = new Date();
     try {
       setLoading(true);
-      const response = await axios.post(
-        URL.Appointment.todayAppointment,
-        {
-          today,
+      let user = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
+      setProfile({
+        ...user,
+      });
+      const response = await axios.get(URL.Appointment.todayAppointment, {
+        headers: {
+          doctorid: user?._id,
         },
-        {
-          headers: {
-            doctorid: profile?._id,
-          },
-        }
-      );
+      });
       console.log(response?.data);
       if (response.status == 200) {
         setAppointmentList(response.data?.appointmentList);
@@ -69,20 +66,23 @@ export default function DoctorHomeScreen({ navigation }) {
         dat.getMinutes(),
       ]);
 
-      (async function () {
-        try {
-          let user = await JSON.parse(await AsyncStorage.getItem("loggedUser"));
-          setProfile({
-            ...user,
-          });
-        } catch (err) {
-          console.log("Error in Doctor Home Screen", err);
-        }
-      })();
-
       fetchAppointments();
     }, [])
   );
+
+  async function statusUpdate() {
+    try {
+      const response = await axios.post(URL.Appointment.statusChange, {
+        appointment_id: appointment?._id,
+        status: "completed",
+      });
+      if (response.status == 200) {
+        Alert.alert("Appointment Completed");
+      }
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  }
 
   return (
     <>
@@ -152,7 +152,7 @@ export default function DoctorHomeScreen({ navigation }) {
 
               <View className="flex flex-wrap justify-around">
                 <View className="mt-3">
-                  {appointmentList &&
+                  {appointmentList && fetchSlotsPatient().length > 0 ? (
                     fetchSlotsPatient().map((patient) => (
                       <View className="p-1 m-1 rounded-lg border border-black/40">
                         <Text>Name: {patient.name}</Text>
@@ -162,29 +162,18 @@ export default function DoctorHomeScreen({ navigation }) {
                         <Text>Mobile: {patient.mobile}</Text>
                         <TouchableOpacity
                           onPress={() => {
-                            async function statusUpdate() {
-                              try {
-                                const response = await axios.post(
-                                  URL.Appointment.statusChange,
-                                  {
-                                    appointment_id: appointment?._id,
-                                    status: "completed",
-                                  }
-                                );
-                                if (response.status == 200) {
-                                  Alert.alert("Appointment Completed");
-                                }
-                              } catch (err) {
-                                console.log("Error: ", err);
-                              }
-                            }
                             // statusUpdate();
                           }}
                         >
                           <View className="rounded-xl bg-green-500">Tick</View>
                         </TouchableOpacity>
                       </View>
-                    ))}
+                    ))
+                  ) : (
+                    <Text className="text-lg text-center">
+                      No Appointment in this slot
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
