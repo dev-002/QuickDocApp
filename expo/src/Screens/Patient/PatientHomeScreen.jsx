@@ -118,11 +118,11 @@ export default function HomeScreen() {
             ) : (
               <>
                 {/* Category */}
-                {specialization && (
-                  <View>
-                    <Text className="font-bold text-xl py-3">
-                      Select Category
-                    </Text>
+                <View>
+                  <Text className="font-bold text-xl py-3">
+                    Select Category
+                  </Text>
+                  {specialization && specialization.length > 0 ? (
                     <Animated.ScrollView horizontal style={{ left: CategoryX }}>
                       <CategoryList
                         setActiveSpec={setActiveSpec}
@@ -130,8 +130,12 @@ export default function HomeScreen() {
                         data={specialization}
                       />
                     </Animated.ScrollView>
-                  </View>
-                )}
+                  ) : (
+                    <Text className="text-lg text-center font-bold">
+                      No Specialization Available
+                    </Text>
+                  )}
+                </View>
 
                 {/* Top Rated Doctors */}
                 <View>
@@ -139,7 +143,13 @@ export default function HomeScreen() {
                     Top Rated Doctors
                   </Text>
                   <ScrollView>
-                    {docList && <DoctorCard docList={docList} />}
+                    {docList && docList?.length > 0 ? (
+                      <DoctorCard docList={docList} />
+                    ) : (
+                      <Text className="text-lg text-center font-bold">
+                        No Doctor Available
+                      </Text>
+                    )}
                   </ScrollView>
                 </View>
               </>

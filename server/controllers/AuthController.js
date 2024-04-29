@@ -7,7 +7,6 @@ const RegisterController = async (req, res, next) => {
   try {
     const { name, password, mobile, gender } = req.body;
     if (Boolean(name && password && mobile && gender)) {
-      console.log("Req body:", req.body);
       let patient = await Patient.create({
         role: 3,
         name,
@@ -15,7 +14,6 @@ const RegisterController = async (req, res, next) => {
         mobile,
         gender,
       });
-      console.log("Patient saved");
       if (patient) {
         const token = genToken(patient._id, patient.role, patient.name);
         if (token) {
@@ -28,6 +26,7 @@ const RegisterController = async (req, res, next) => {
       } else throw new Error("Error Creating patient document");
     }
   } catch (err) {
+    console.log(err);
     return res.status(400).json({ ack: false, err });
   }
 };

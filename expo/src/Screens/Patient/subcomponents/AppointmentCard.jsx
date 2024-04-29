@@ -1,14 +1,8 @@
+import axios from "axios";
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { Alert, Text, TouchableOpacity } from "react-native";
 
 export default function AppointmentCard2({ appointment }) {
-  const navigation = useNavigation();
-
-  function handlePress(id) {
-    navigation.navigate("DoctorPatientRecord", { id });
-  }
-
   function formatDate(date) {
     const newDate = new Date(date);
     return `${newDate.getDate()}/${newDate.getMonth()}/${newDate.getFullYear()}`;
@@ -24,6 +18,8 @@ export default function AppointmentCard2({ appointment }) {
         return <Text className="text-red-500">Rejected</Text>;
       case "completed":
         return <Text className="text-grey-500">Completed</Text>;
+      case "canceled":
+        return <Text className="text-red-500">Completed</Text>;
     }
   }
 
@@ -41,12 +37,30 @@ export default function AppointmentCard2({ appointment }) {
         return <Text className="text-orange-500">9 PM - 11 PM</Text>;
     }
   }
+
+  async function cancelApp(_id) {
+    try {
+      setLoading(true);
+      const response = await axios.put(
+        URL.Patient.cancelApp,
+        { status: "canceled" },
+        {
+          patientId: appointment?.patientId,
+        }
+      );
+      if (response.status === 200) {
+        setLoading(false);
+        Alert.alert("Appointment Canceled");
+      }
+    } catch (err) {
+      console.log("Error while canceling Appointment", err);
+      Alert.alert("Error while canceling Appointment");
+      setLoading(false);
+    }
+  }
   return (
     <>
-      <TouchableOpacity
-        onPress={() => handlePress(appointment?.patientId?._id)}
-        className="my-2 mx-auto w-[80%] p-1 px-2 border-2 border-black/40 rounded-lg"
-      >
+      <View className="my-2 mx-auto w-[80%] p-1 px-2 border-2 border-black/40 rounded-lg">
         <Text className="text-lg" numberOfLines={1}>
           Date: {formatDate(appointment?.date)}
         </Text>
@@ -69,7 +83,13 @@ export default function AppointmentCard2({ appointment }) {
         <Text className="text-lg" numberOfLines={2}>
           Reason: {appointment?.reason}
         </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => cancelApp(appointment._id)}
+          className="border border-red-500 relative right-8"
+        >
+          <Text className="text-lg text-red-300">Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 }

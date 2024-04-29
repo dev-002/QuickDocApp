@@ -7,12 +7,13 @@ const getProfile = async (req, res, next) => {
   try {
     if (patient.role == 3) {
       patient = await Patient.findById(patient._id)
-        .populate("medicalRecord")
+        ?.populate("medicalRecord")
         .populate("doctorId");
       if (patient) return res.status(200).json({ ack: true, patient });
       else return res.status(404).json({ ack: false, err: "No user found" });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ ack: false, err: error });
   }
 };

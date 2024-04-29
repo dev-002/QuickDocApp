@@ -51,7 +51,7 @@ const patientSchema = new Schema({
     type: String,
   },
   medicalRecord: {
-    type: Schema.Types.ObjectId,
+    type: [Schema.Types.ObjectId],
     ref: "medicalRecord",
     default: [],
   },

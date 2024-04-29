@@ -10,10 +10,10 @@ import Animated, {
 } from "react-native-reanimated";
 import getScreen from "../utility/getScreen";
 import { useFocusEffect } from "@react-navigation/native";
+import useLoggedIn from "../Context/useLoggedIn";
 
 export default function WelcomeScreen({ navigation }) {
-  // const [isLogged] = useContext(useLoggedIn);
-  const isLogged = true;
+  const [isLogged] = useContext(useLoggedIn);
 
   const ringValue = useSharedValue(0);
   const translateValue = useSharedValue(250);
