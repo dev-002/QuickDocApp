@@ -2,11 +2,6 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const contactSchema = {
-  name: String,
-  contact: Number,
-};
-
 const patientSchema = new Schema({
   role: {
     type: Number,
@@ -51,11 +46,18 @@ const patientSchema = new Schema({
     type: String,
   },
   medicalRecord: {
-    type: [Schema.Types.ObjectId],
-    ref: "medicalRecord",
+    type: [{ type: Schema.Types.ObjectId, ref: "record" }],
     default: [],
   },
-  emergencyContacts: { type: [contactSchema], default: null },
+  emergencyContacts: {
+    type: [
+      {
+        name: String,
+        contact: Number,
+      },
+    ],
+    default: null,
+  },
 });
 
 patientSchema.pre("save", function (next) {

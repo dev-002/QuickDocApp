@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const patient = require("./patient");
+const doctor = require("./doctor");
 
 const medicalRecordSchema = new Schema({
   patientId: {
@@ -18,4 +20,4 @@ const medicalRecordSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("medicalRecord", medicalRecordSchema);
+module.exports = mongoose.model("record", medicalRecordSchema);

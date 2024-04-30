@@ -13,7 +13,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import useLoggedIn from "../Context/useLoggedIn";
 
 export default function WelcomeScreen({ navigation }) {
-  const [isLogged] = useContext(useLoggedIn);
+  // const [isLogged] = useContext(useLoggedIn);
+  const isLogged = false;
 
   const ringValue = useSharedValue(0);
   const translateValue = useSharedValue(250);

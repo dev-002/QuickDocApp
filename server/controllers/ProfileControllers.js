@@ -1,14 +1,25 @@
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
+const MedicalRecord = require("../models/medicalRecord");
 
 const getProfile = async (req, res, next) => {
   let patient = req.patient;
   try {
     if (patient.role == 3) {
-      patient = await Patient.findById(patient._id)
-        ?.populate("medicalRecord")
-        .populate("doctorId");
+      patient = await Patient.findById(patient._id);
+
+      if (patient.medicalRecord?.length > 0) {
+        patient = await Patient.findById(patient._id)
+          ?.populate("medicalRecord")
+          .populate({
+            path: "medicalRecord",
+            populate: {
+              path: "doctorID",
+              model: "doctor",
+            },
+          });
+      }
       if (patient) return res.status(200).json({ ack: true, patient });
       else return res.status(404).json({ ack: false, err: "No user found" });
     }
