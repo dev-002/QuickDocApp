@@ -20,6 +20,7 @@ const AppointmentRequest = async (req, res, next) => {
       else throw new Error("Error while creating appointment");
     } else return res.status(404).json({ err: "Values not provided" });
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json({ err, msg: "Error while creating appointment" });

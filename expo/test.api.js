@@ -10,6 +10,7 @@ export default {
     getProfile: baseUrl + "/patient/profile", //get, put
     getAppointments: baseUrl + "/patient/appointments", //get
     getSpecificScpecialization: baseUrl + "/patient/specific", //get
+    cancelApp: baseUrl + "/patient/cancelapp",
   },
   Doctor: {
     getDoctors: baseUrl + "/doctor/list", // get

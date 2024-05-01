@@ -41,11 +41,18 @@ const updateProfile = async (req, res, next) => {
       if (patient) {
         let updatedPatient = await Patient.findById(patient._id)
           .populate("medicalRecord")
-          .populate("doctorId");
+          .populate({
+            path: "medicalRecord",
+            populate: {
+              path: "doctorID",
+              model: "doctor",
+            },
+          });
         return res.status(200).json({ ack: true, updatedPatient });
       } else throw new Error("Error updating user profile");
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ ack: false, err });
   }
 };
@@ -54,7 +61,6 @@ const getAppointments = async (req, res, next) => {
   const patient = req.patient;
   const { status } = req.query;
   try {
-    let date = new Date().setHours(0, 0, 0, 0);
     let appointmentList;
     if (status == "all") {
       appointmentList = await Appointment.find({
@@ -95,9 +101,31 @@ const getSpecificDoctor = async (req, res, next) => {
   }
 };
 
+const cancelAppointment = async (req, res, next) => {
+  const patient = req.patient;
+  const { status, appointmentID } = req.body;
+
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(
+      appointmentID,
+      {
+        $set: { status },
+      },
+      { new: true }
+    );
+    console.log(appointment);
+    if (appointment) {
+      return res.status(200).json({ ack: true });
+    } else throw new Error("Error fetching Appointments");
+  } catch (err) {
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   getAppointments,
   getSpecificDoctor,
+  cancelAppointment,
 };

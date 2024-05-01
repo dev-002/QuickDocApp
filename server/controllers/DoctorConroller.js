@@ -61,6 +61,9 @@ const listAppointment = async (req, res, next) => {
         appointments = appointments.filter((appointment) => {
           return new Date(appointment.date) >= date;
         });
+        appointments = appointments.filter((appointment) => {
+          return appointment.status !== "canceled";
+        });
         return res.status(200).json({ ack: true, appointments });
       } else return res.status(200).json({ ack: true, appointments });
     } else throw new Error("Error fetching Appointment List");
