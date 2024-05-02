@@ -14,6 +14,11 @@ const medicalRecordSchema = new Schema({
     ref: "doctor",
     required: true,
   },
+  appointmentId: {
+    type: Schema.Types.ObjectId,
+    ref: "appointment",
+    required: true,
+  },
   detail: {
     type: String,
     required: true,

@@ -2,6 +2,7 @@ const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
 const Patient = require("../models/patient");
 const { ObjectId } = require("mongoose").Types;
+const MedicalRecord = require("../models/medicalRecord");
 
 const listDoctor = async (req, res, next) => {
   try {
@@ -23,7 +24,6 @@ const listAppointment = async (req, res, next) => {
   let { date, status, search, searchType } = req.query;
   try {
     let appointments;
-
     if (search != "")
       switch (searchType) {
         case "1": {
@@ -182,6 +182,35 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const completeAppointment = async (req, res, next) => {
+  let { record, status } = req.body;
+  let patient_id = new ObjectId(record.patient_id),
+    appointmentId = new ObjectId(record.appointmentId),
+    doctorID = new ObjectId(record.doctorID);
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(
+      record.appointmentId,
+      { $set: { status: status } },
+      { new: true }
+    );
+    if (appointment) {
+      const medicalRecord = await MedicalRecord({
+        patientId: patient_id,
+        appointmentId: appointmentId,
+        doctorID: doctorID,
+        detail: record.detail,
+      });
+      await medicalRecord.save();
+      if (medicalRecord) {
+        return res.status(201).json({ ack: true, record });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
 module.exports = {
   listDoctor,
   listAppointment,
@@ -191,4 +220,5 @@ module.exports = {
   applyLeave,
   updateProfile,
   fetchProfile,
+  completeAppointment,
 };

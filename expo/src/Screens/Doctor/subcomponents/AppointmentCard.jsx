@@ -47,6 +47,21 @@ export default function AppointmentCard2({ appointment }) {
     }
   }
 
+  function getSlot(slot) {
+    switch (slot) {
+      case "10-12":
+        return <Text className="text-green-700">10 AM - 12 PM</Text>;
+      case "12-14":
+        return <Text className="text-yellow-700">12 PM - 2 PM</Text>;
+      case "15-17":
+        return <Text className="text-orange-700">3 PM - 5 PM</Text>;
+      case "17-19":
+        return <Text className="text-blue-800">5 PM - 7 PM</Text>;
+      case "21-23":
+        return <Text className="text-black">9 PM - 11 PM</Text>;
+    }
+  }
+
   return (
     <>
       <TouchableOpacity
@@ -61,6 +76,7 @@ export default function AppointmentCard2({ appointment }) {
           Patient gender:{" "}
           {appointment?.patientId?.gender === 1 ? "Male" : "Female"}
         </Text>
+        <Text className="text-lg">Slot: {getSlot(appointment?.timeSlot)}</Text>
         <Text className="text-lg">Doctor: {appointment?.doctorId?.name}</Text>
         <Text className="text-lg">
           Status: {getStatus(appointment?.status)}

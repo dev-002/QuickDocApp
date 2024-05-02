@@ -19,6 +19,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import Header from "../../Components/Header";
 import { useNavigation } from "@react-navigation/native";
 import TimeSlots from "./subcomponents/TimeSlots";
+import CompleteModal from "./subcomponents/CompleteModal";
 
 export default function DoctorHomeScreen({ navigation }) {
   const [profile, setProfile] = useState({});
@@ -26,6 +27,7 @@ export default function DoctorHomeScreen({ navigation }) {
   const [time, setTime] = useState([]);
   const [appointmentList, setAppointmentList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [completeModal, setCompleteModal] = useState(false);
 
   async function fetchAppointments() {
     try {
@@ -39,7 +41,6 @@ export default function DoctorHomeScreen({ navigation }) {
           doctorid: user?._id,
         },
       });
-      console.log(response?.data);
       if (response.status == 200) {
         setAppointmentList(response.data?.appointmentList);
         setLoading(false);
@@ -50,10 +51,43 @@ export default function DoctorHomeScreen({ navigation }) {
     }
   }
 
+  function getTime() {
+    const hour = new Date().getHours();
+    let slot;
+    if (hour >= 10 && hour <= 12) {
+      slot = "10-12";
+    } else if (hour > 12 && hour <= 14) {
+      slot = "12-14";
+    } else if (hour > 15 && hour <= 17) {
+      slot = "15-17";
+    } else if (hour > 17 && hour <= 19) {
+      slot = "17-19";
+    } else if (hour > 21 && hour <= 23) {
+      slot = "21-23";
+    }
+    return slot;
+  }
+
   function fetchSlotsPatient() {
     let slot = new Date();
-    let list = appointmentList.filter((app) => {
-      if (app.timeSlot == slot) return app?.patientId;
+    let list = [];
+    appointmentList.map((app) => {
+      let date = new Date(app.date);
+      if (
+        date.getDate() == slot.getDate() &&
+        date.getMonth() == slot.getMonth()
+      ) {
+        return list.push({
+          ...app.patientId,
+          timeSlot: app.timeSlot,
+          doctor_id: app.doctorId,
+          appointment_id: app._id,
+        });
+      }
+    });
+    const time = getTime();
+    list = list.filter((l) => {
+      return l.timeSlot == time;
     });
     return list;
   }
@@ -69,20 +103,6 @@ export default function DoctorHomeScreen({ navigation }) {
       fetchAppointments();
     }, [])
   );
-
-  async function statusUpdate() {
-    try {
-      const response = await axios.post(URL.Appointment.statusChange, {
-        appointment_id: appointment?._id,
-        status: "completed",
-      });
-      if (response.status == 200) {
-        Alert.alert("Appointment Completed");
-      }
-    } catch (err) {
-      console.log("Error: ", err);
-    }
-  }
 
   return (
     <>
@@ -135,7 +155,9 @@ export default function DoctorHomeScreen({ navigation }) {
 
             {/* Today's Appointment */}
             <View className="my-1">
-              <Text className="font-bold text-xl">Today's Appointments:</Text>
+              <Text className="font-boldfetchSlotsPatient text-xl">
+                Today's Appointments:
+              </Text>
 
               <View className="flex flex-row flex-wrap justify-around">
                 <TimeSlots slot={"10-12"} appointmentList={appointmentList} />
@@ -150,23 +172,51 @@ export default function DoctorHomeScreen({ navigation }) {
             <View className="flex-1">
               <Text className="font-bold text-xl">Patient List:</Text>
 
-              <View className="flex flex-wrap justify-around">
+              <View className="flex justify-around">
                 <View className="mt-3">
-                  {appointmentList && fetchSlotsPatient().length > 0 ? (
-                    fetchSlotsPatient().map((patient) => (
-                      <View className="p-1 m-1 rounded-lg border border-black/40">
-                        <Text>Name: {patient.name}</Text>
-                        <Text>
-                          Gender: {patient.gender == 1 ? "Male" : "Female"}
-                        </Text>
-                        <Text>Mobile: {patient.mobile}</Text>
-                        <TouchableOpacity
-                          onPress={() => {
-                            // statusUpdate();
-                          }}
-                        >
-                          <View className="rounded-xl bg-green-500">Tick</View>
-                        </TouchableOpacity>
+                  {appointmentList && fetchSlotsPatient()?.length > 0 ? (
+                    fetchSlotsPatient().map((patient, index) => (
+                      <View
+                        key={index}
+                        className="p-1 m-1 rounded-lg border border-black/40 flex-row"
+                      >
+                        <View className="w-2/3">
+                          <Text>Name: {patient.name}</Text>
+                          <Text>
+                            Gender: {patient.gender == 1 ? "Male" : "Female"}
+                          </Text>
+                          <Text>Mobile: {patient.mobile}</Text>
+                          <Text>Slot: {patient?.timeSlot}</Text>
+                        </View>
+
+                        <CompleteModal
+                          patient_id={patient._id}
+                          patientName={patient.name}
+                          completeModal={completeModal}
+                          setCompleteModal={setCompleteModal}
+                          appointment_id={patient.appointment_id}
+                          doctor_id={patient.doctor_id}
+                        />
+
+                        <View className="w-1/3">
+                          {patient?.status != "completed" ? (
+                            <TouchableOpacity
+                              onPress={() => setCompleteModal(true)}
+                            >
+                              <View className="justify-center align-center p-5 rounded-xl bg-green-500">
+                                <Text className="text-center text-white font-bold">
+                                  Complete
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          ) : (
+                            <View className="justify-center align-center p-5 rounded-xl bg-green-700">
+                              <Text className="text-center text-white font-bold">
+                                Appointment Completed
+                              </Text>
+                            </View>
+                          )}
+                        </View>
                       </View>
                     ))
                   ) : (

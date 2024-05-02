@@ -20,6 +20,7 @@ export default {
     fetchList: baseUrl + "/doctor/fetch/list", // get,
     applyLeave: baseUrl + "/doctor/leave", // post
     updateProfile: baseUrl + "/doctor/profile", // put, get
+    completeAppointment: baseUrl + "/doctor/complete", //post
   },
   Appointment: {
     appointmentReqest: baseUrl + "/appointment/", // post
