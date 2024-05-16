@@ -1,4 +1,4 @@
-const baseUrl = `${process.env.BASE_URL}/api/v1`;
+const baseUrl = `https://quickdocapp-api.onrender.com/api/v1`;
 
 export default {
   Auth: {
