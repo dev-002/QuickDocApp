@@ -98,6 +98,14 @@ export default function DoctorProfile({ navigation }) {
         }));
         break;
       }
+      case "medical_practice": {
+        let temp = value?.split(",");
+        setDoctor((prevProfile) => ({
+          ...prevProfile,
+          [field]: temp,
+        }));
+        break;
+      }
       default: {
         console.log("Error");
       }
@@ -202,6 +210,16 @@ export default function DoctorProfile({ navigation }) {
                 onChangeText={(text) => handleChange(text, "specialization")}
               />
             </View>
+          </View>
+
+          <View className="w-1/2 flex flex-row justify-normal items-center">
+            <Text className="w-1/3 text-lg">Medical Practice:</Text>
+            <TextInput
+              value={doctor?.medical_practice}
+              placeholder="Enter Medical Practice (,)"
+              className={"my-1 p-1 border border-black/40 rounded-lg"}
+              onChangeText={(text) => handleChange(text, "medical_practice")}
+            />
           </View>
 
           <ScrollView

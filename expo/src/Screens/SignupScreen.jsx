@@ -1,5 +1,5 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import SelectDropDown from "react-native-select-dropdown";
@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Auth from "../../test.api";
 import { useLoggedIn } from "../Context/useLoggedIn";
 import getScreen from "../utility/getScreen";
+import { useFocusEffect } from "@react-navigation/native";
 
 // Icon
 import Hide from "../../assets/Icon/hide.png";
@@ -24,6 +25,25 @@ export default function SignupScreen({ navigation }) {
   const [gender, setGender] = useState(1);
   const [hide, setHide] = useState(true);
   const [error, setError] = useState({});
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     async function check() {
+  //       const token = await AsyncStorage.setItem("token", token);
+  //       const loggedUser = await AsyncStorage.setItem(
+  //         "loggedUser",
+  //         JSON.stringify(response.data?.user)
+  //       );
+  //       const role = await AsyncStorage.setItem(
+  //         "role",
+  //         String(response.data?.user?.role)
+  //       );
+  //       if (token && loggedUser && role)
+  //         await navigation.replace(await getScreen());
+  //     }
+  //     check();
+  //   }, [])
+  // );
 
   async function handleSubmit() {
     // Check validation;

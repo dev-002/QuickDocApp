@@ -10,10 +10,12 @@ const {
   applyLeave,
   updateProfile,
   fetchProfile,
+  fetchDocDetail,
   completeAppointment,
 } = require("../controllers/DoctorConroller");
 const verifyDoctor = require("../utilities/verifyDoctor");
 
+router.get("/docDetail", verifyDoctor, fetchDocDetail);
 router.get("/list", listDoctor);
 router.get("/specialization", getAllSpecialization);
 router.get("/appointment", verifyDoctor, listAppointment);

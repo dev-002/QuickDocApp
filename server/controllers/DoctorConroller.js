@@ -211,6 +211,21 @@ const completeAppointment = async (req, res, next) => {
   }
 };
 
+const fetchDocDetail = async (req, res, next) => {
+  const doctor = req.doctor;
+  try {
+    if (doctor) {
+      let data = await Doctor.findOne({ _id: doctor._id });
+      if (data) {
+        return res.status(200).json({ ack: true, doc: data });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ ack: false, err });
+  }
+};
+
 module.exports = {
   listDoctor,
   listAppointment,
@@ -220,5 +235,6 @@ module.exports = {
   applyLeave,
   updateProfile,
   fetchProfile,
+  fetchDocDetail,
   completeAppointment,
 };

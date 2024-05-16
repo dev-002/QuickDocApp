@@ -1,5 +1,5 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import SelectDropDown from "react-native-select-dropdown";
@@ -12,6 +12,7 @@ import { useLoggedIn } from "../Context/useLoggedIn";
 import Hide from "../../assets/Icon/hide.png";
 import Show from "../../assets/Icon/show.png";
 import getScreen from "../utility/getScreen";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function LoginScreen({ navigation }) {
   const [isLogged, setIsLogged] = useContext(useLoggedIn);
@@ -22,6 +23,26 @@ export default function LoginScreen({ navigation }) {
   const [error, setError] = useState();
   const [role, setRole] = useState(3);
   //1- admin 2- doctor 3- patient
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     async function check() {
+  //       const token = await AsyncStorage.setItem("token", token);
+  //       const loggedUser = await AsyncStorage.setItem(
+  //         "loggedUser",
+  //         JSON.stringify(response.data?.user)
+  //       );
+  //       const role = await AsyncStorage.setItem(
+  //         "role",
+  //         String(response.data?.user?.role)
+  //       );
+  //       console.log("Hey", token, loggedUser, role);
+  //       if (token && loggedUser && role)
+  //         await navigation.replace(await getScreen());
+  //     }
+  //     check();
+  //   }, [])
+  // );
 
   async function handleSubmit() {
     // Check validation;
@@ -49,13 +70,7 @@ export default function LoginScreen({ navigation }) {
         );
         await AsyncStorage.setItem("role", String(response.data?.user?.role));
         await setIsLogged(true);
-        console.log(await getScreen());
         await navigation.replace(await getScreen());
-        // response.data.user.role == 1
-        //   ? navigation.replace("DoctorHome")
-        //   : role == 2
-        //   ? navigation.replace("Home")
-        //   : navigation.replace("Admin");
       }
     } catch (error) {
       console.log("Error Signing in:", error);

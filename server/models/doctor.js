@@ -19,6 +19,9 @@ const doctorSchema = new Schema({
     type: String,
     required: true,
   },
+  medical_practice: {
+    type: [String],
+  },
   mobile: {
     type: Number,
     unique: true,

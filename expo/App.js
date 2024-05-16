@@ -13,6 +13,7 @@ import PatientAppointmentScreen from "./src/Screens/Patient/PatientAppointmentLi
 import FormScreen from "./src/Screens/Patient/AppointmentBookScreen";
 import AmbulanceEmergencyScreen from "./src/Screens/Patient/AmbulanceEmergencyScreen";
 import ProfileScreen from "./src/Screens/Patient/PatientProfileScreen";
+import DoctorViewScreen from "./src/Screens/Patient/DoctorViewScreen";
 // Doctor
 import DoctorHomeScreen from "./src/Screens/Doctor/DoctorHomeScreen";
 import DoctorAppointmentList from "./src/Screens/Doctor/AppointmentList";
@@ -53,6 +54,7 @@ export default function App() {
             component={AmbulanceEmergencyScreen}
           />
           <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="DoctorViewScreen" component={DoctorViewScreen} />
 
           {/* Doctor */}
           <Stack.Screen name="DoctorHome" component={DoctorHomeScreen} />

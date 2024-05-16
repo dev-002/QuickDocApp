@@ -1,5 +1,4 @@
-const ip = "192.168.1.35";
-const baseUrl = `http://${ip}:5000/api/v1`;
+const baseUrl = `${process.env.BASE_URL}/api/v1`;
 
 export default {
   Auth: {
@@ -13,6 +12,7 @@ export default {
     cancelApp: baseUrl + "/patient/cancelapp",
   },
   Doctor: {
+    fetchDocDetails: baseUrl + "/doctor/docDetail", //get
     getDoctors: baseUrl + "/doctor/list", // get
     getSpecialization: baseUrl + "/doctor/specialization", // get
     fetchPatient: baseUrl + "/doctor/fetchPaitent", // post

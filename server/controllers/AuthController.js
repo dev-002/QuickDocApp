@@ -33,7 +33,7 @@ const RegisterController = async (req, res, next) => {
 
 const LoginController = async (req, res, next) => {
   const { role, mobile, password } = req.body;
-
+  console.log(req.body);
   try {
     if (Boolean(mobile && password && role)) {
       if (role == 2) {

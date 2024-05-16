@@ -9,6 +9,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function DoctorCard({ docList }) {
   const navigation = useNavigation();
@@ -86,8 +87,17 @@ export default function DoctorCard({ docList }) {
                 </View>
 
                 {/* Doctor Name */}
-                <View className="mb-1">
+                <View className="mb-1 w-full flex-row items-center justify-evenly">
                   <Text className="font-bold text-xl">{doc.name}</Text>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("DoctorViewScreen", { doc })
+                    }
+                    className=""
+                  >
+                    <Icons name="send" size={20} color={"black"} />
+                  </TouchableOpacity>
                 </View>
 
                 {/* Specialization */}
